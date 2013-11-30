@@ -1,0 +1,697 @@
+---
+title: 字符串Hash函数对比（zz）
+author: codeboy
+layout: post
+permalink: /2012/07/29/%e5%ad%97%e7%ac%a6%e4%b8%b2hash%e5%87%bd%e6%95%b0%e5%af%b9%e6%af%94%ef%bc%88zz%ef%bc%89/
+categories:
+  - 算法
+  - 转载
+---
+<pre>/// @brief BKDR Hash Function
+/// @detail 本算法由于在Brian Kernighan与Dennis Ritchie的《The C Programming Language》一书被展示而得名，是一种简单快捷的hash算法，也是Java目前采用的字符串的Hash算法（累乘因子为31）。
+template
+size_t BKDRHash(const T *str)
+{
+	register size_t hash = 0;
+	while (size_t ch = (size_t)*str++)
+	{		
+		hash = hash * 131 + ch;   // 也可以乘以31、131、1313、13131、131313..
+		// 有人说将乘法分解为位运算及加减法可以提高效率，如将上式表达为：hash = hash &lt;&lt; 7 + hash &lt;&lt; 1 + hash + ch;
+		// 但其实在Intel平台上，CPU内部对二者的处理效率都是差不多的，
+		// 我分别进行了100亿次的上述两种运算，发现二者时间差距基本为0（如果是Debug版，分解成位运算后的耗时还要高1/3）；
+		// 在ARM这类RISC系统上没有测试过，由于ARM内部使用Booth's Algorithm来模拟32位整数乘法运算，它的效率与乘数有关：
+		// 当乘数8-31位都为1或0时，需要1个时钟周期
+		// 当乘数16-31位都为1或0时，需要2个时钟周期
+		// 当乘数24-31位都为1或0时，需要3个时钟周期
+		// 否则，需要4个时钟周期
+		// 因此，虽然我没有实际测试，但是我依然认为二者效率上差别不大		
+	}
+	return hash;
+}</pre>
+
+<!--more-->
+
+<pre>/// @brief SDBM Hash Function
+/// @detail 本算法是由于在开源项目SDBM（一种简单的数据库引擎）中被应用而得名，它与BKDRHash思想一致，只是种子不同而已。
+template
+size_t SDBMHash(const T *str)
+{
+	register size_t hash = 0;
+	while (size_t ch = (size_t)*str++)
+	{
+		hash = 65599 * hash + ch;		
+		//hash = (size_t)ch + (hash &lt;&lt; 6) + (hash &lt;&lt; 16) - hash;
+	}
+	return hash;
+}
+/// @brief RS Hash Function
+/// @detail 因Robert Sedgwicks在其《Algorithms in C》一书中展示而得名。
+template
+size_t RSHash(const T *str)
+{
+	register size_t hash = 0;
+	size_t magic = 63689;	
+	while (size_t ch = (size_t)*str++)
+	{
+		hash = hash * magic + ch;
+		magic *= 378551;
+	}
+	return hash;
+}
+/// @brief AP Hash Function
+/// @detail 由Arash Partow发明的一种hash算法。
+template
+size_t APHash(const T *str)
+{
+	register size_t hash = 0;
+	size_t ch;
+	for (long i = 0; ch = (size_t)*str++; i++)
+	{
+		if ((i & 1) == 0)
+		{
+			hash ^= ((hash &lt;&lt; 7) ^ ch ^ (hash &gt;&gt; 3));
+		}
+		else
+		{
+			hash ^= (~((hash &lt;&lt; 11) ^ ch ^ (hash &gt;&gt; 5)));
+		}
+	}
+	return hash;
+}
+/// @brief JS Hash Function
+/// 由Justin Sobel发明的一种hash算法。
+template
+size_t JSHash(const T *str)
+{
+	if(!*str)		 // 这是由本人添加，以保证空字符串返回哈希值0
+		return 0;
+	register size_t hash = 1315423911;
+	while (size_t ch = (size_t)*str++)
+	{
+		hash ^= ((hash &lt;&lt; 5) + ch + (hash &gt;&gt; 2));
+	}
+	return hash;
+}
+/// @brief DEK Function
+/// @detail 本算法是由于Donald E. Knuth在《Art Of Computer Programming Volume 3》中展示而得名。
+template
+size_t DEKHash(const T* str)
+{
+	if(!*str)		 // 这是由本人添加，以保证空字符串返回哈希值0
+		return 0;
+	register size_t hash = 1315423911;
+	while (size_t ch = (size_t)*str++)
+	{
+		hash = ((hash &lt;&lt; 5) ^ (hash &gt;&gt; 27)) ^ ch;
+	}
+	return hash;
+}
+/// @brief FNV Hash Function
+/// @detail Unix system系统中使用的一种著名hash算法，后来微软也在其hash_map中实现。
+template
+size_t FNVHash(const T* str)
+{
+	if(!*str)	// 这是由本人添加，以保证空字符串返回哈希值0
+		return 0;
+	register size_t hash = 2166136261;
+	while (size_t ch = (size_t)*str++)
+	{
+		hash *= 16777619;
+		hash ^= ch;
+	}
+	return hash;
+}
+/// @brief DJB Hash Function
+/// @detail 由Daniel J. Bernstein教授发明的一种hash算法。
+template
+size_t DJBHash(const T *str)
+{
+	if(!*str)	// 这是由本人添加，以保证空字符串返回哈希值0
+		return 0;
+	register size_t hash = 5381;
+	while (size_t ch = (size_t)*str++)
+	{
+		hash += (hash &lt;&lt; 5) + ch;
+	}
+	return hash;
+}
+/// @brief DJB Hash Function 2
+/// @detail 由Daniel J. Bernstein 发明的另一种hash算法。
+template
+size_t DJB2Hash(const T *str)
+{
+	if(!*str)	// 这是由本人添加，以保证空字符串返回哈希值0
+		return 0;
+	register size_t hash = 5381;
+	while (size_t ch = (size_t)*str++)
+	{
+		hash = hash * 33 ^ ch;
+	}
+	return hash;
+}
+/// @brief PJW Hash Function
+/// @detail 本算法是基于AT&T贝尔实验室的Peter J. Weinberger的论文而发明的一种hash算法。
+template
+size_t PJWHash(const T *str)
+{
+	static const size_t TotalBits		= sizeof(size_t) * 8;
+	static const size_t ThreeQuarters	= (TotalBits  * 3) / 4;
+	static const size_t OneEighth		= TotalBits / 8;
+	static const size_t HighBits		= ((size_t)-1) &lt;&lt; (TotalBits - OneEighth);	
+
+	register size_t hash = 0;
+	size_t magic = 0;	
+	while (size_t ch = (size_t)*str++)
+	{
+		hash = (hash &lt;&lt; OneEighth) + ch; 		if ((magic = hash & HighBits) != 0) 		{ 			hash = ((hash ^ (magic &gt;&gt; ThreeQuarters)) & (~HighBits));
+		}
+	}
+	return hash;
+}
+/// @brief ELF Hash Function
+/// @detail 由于在Unix的Extended Library Function被附带而得名的一种hash算法，它其实就是PJW Hash的变形。
+template
+size_t ELFHash(const T *str)
+{
+	static const size_t TotalBits		= sizeof(size_t) * 8;
+	static const size_t ThreeQuarters	= (TotalBits  * 3) / 4;
+	static const size_t OneEighth		= TotalBits / 8;
+	static const size_t HighBits		= ((size_t)-1) &lt;&lt; (TotalBits - OneEighth);	
+	register size_t hash = 0;
+	size_t magic = 0;
+	while (size_t ch = (size_t)*str++)
+	{
+		hash = (hash &lt;&lt; OneEighth) + ch; 		if ((magic = hash & HighBits) != 0) 		{ 			hash ^= (magic &gt;&gt; ThreeQuarters);
+			hash &= ~magic;
+		}		
+	}
+	return hash;
+}</pre>
+
+我对这些hash的散列质量及效率作了一个简单测试，测试结果如下：
+
+**测试1**：对100000个由大小写字母与数字随机的ANSI字符串（无重复，每个字符串最大长度不超过64字符）进行散列：
+
+<table border="1" cellspacing="0" cellpadding="2">
+  <tr>
+    <td align="center" valign="top" width="161">
+      字符串函数
+    </td>
+    
+    <td align="center" width="130">
+      冲突数
+    </td>
+    
+    <td align="center" width="187">
+      除1000003取余后的冲突数
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      <em>BKDRHash</em>
+    </td>
+    
+    <td align="center" width="130">
+    </td>
+    
+    <td align="center" width="187">
+      4826
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      SDBMHash
+    </td>
+    
+    <td align="center" width="130">
+      2
+    </td>
+    
+    <td align="center" width="187">
+      4814
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      RSHash
+    </td>
+    
+    <td align="center" width="130">
+      2
+    </td>
+    
+    <td align="center" width="187">
+      4886
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      APHash
+    </td>
+    
+    <td align="center" width="130">
+    </td>
+    
+    <td align="center" width="187">
+      4846
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      ELFHash
+    </td>
+    
+    <td align="center" width="130">
+      1515
+    </td>
+    
+    <td align="center" width="187">
+      6120
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      JSHash
+    </td>
+    
+    <td align="center" width="130">
+      779
+    </td>
+    
+    <td align="center" width="187">
+      5587
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      DEKHash
+    </td>
+    
+    <td align="center" width="130">
+      863
+    </td>
+    
+    <td align="center" width="187">
+      5643
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      FNVHash
+    </td>
+    
+    <td align="center" width="130">
+      2
+    </td>
+    
+    <td align="center" width="187">
+      4872
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      DJBHash
+    </td>
+    
+    <td align="center" width="130">
+      832
+    </td>
+    
+    <td align="center" width="187">
+      5645
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      DJB2Hash
+    </td>
+    
+    <td align="center" width="130">
+      695
+    </td>
+    
+    <td align="center" width="187">
+      5309
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      PJWHash
+    </td>
+    
+    <td align="center" width="130">
+      1515
+    </td>
+    
+    <td align="center" width="187">
+      6120
+    </td>
+  </tr>
+</table>
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+**测试2**：对100000个由任意UNICODE组成随机字符串（无重复，每个字符串最大长度不超过64字符）进行散列：
+
+&nbsp;
+
+<table border="1" cellspacing="0" cellpadding="2">
+  <tr>
+    <td align="center" valign="top" width="161">
+      字符串函数
+    </td>
+    
+    <td align="center" width="132">
+      冲突数
+    </td>
+    
+    <td align="center" width="185">
+      除1000003取余后的冲突数
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="161">
+      BKDRHash
+    </td>
+    
+    <td align="center" width="133">
+      3
+    </td>
+    
+    <td align="center" width="185">
+      4710
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="160">
+      SDBMHash
+    </td>
+    
+    <td align="center" width="134">
+      3
+    </td>
+    
+    <td align="center" width="185">
+      4904
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="160">
+      RSHash
+    </td>
+    
+    <td align="center" width="134">
+      3
+    </td>
+    
+    <td align="center" width="185">
+      4822
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="160">
+      APHash
+    </td>
+    
+    <td align="center" width="134">
+      2
+    </td>
+    
+    <td align="center" width="185">
+      4891
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="160">
+      ELFHash
+    </td>
+    
+    <td align="center" width="134">
+      16
+    </td>
+    
+    <td align="center" width="185">
+      4869
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="160">
+      JSHash
+    </td>
+    
+    <td align="center" width="134">
+      3
+    </td>
+    
+    <td align="center" width="185">
+      4812
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="160">
+      DEKHash
+    </td>
+    
+    <td align="center" width="134">
+      1
+    </td>
+    
+    <td align="center" width="185">
+      4755
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="160">
+      FNVHash
+    </td>
+    
+    <td align="center" width="134">
+      1
+    </td>
+    
+    <td align="center" width="185">
+      4803
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="160">
+      DJBHash
+    </td>
+    
+    <td align="center" width="134">
+      1
+    </td>
+    
+    <td align="center" width="185">
+      4749
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="160">
+      DJB2Hash
+    </td>
+    
+    <td align="center" width="134">
+      2
+    </td>
+    
+    <td align="center" width="185">
+      4817
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="160">
+      PJWHash
+    </td>
+    
+    <td align="center" width="134">
+      16
+    </td>
+    
+    <td align="center" width="185">
+      4869
+    </td>
+  </tr>
+</table>
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+**测试3**：对1000000个随机ANSI字符串（无重复，每个字符串最大长度不超过64字符）进行散列：
+
+&nbsp;
+
+<table border="1" cellspacing="0" cellpadding="2">
+  <tr>
+    <td align="center" valign="top" width="260">
+      字符串函数
+    </td>
+    
+    <td align="center" width="165">
+      耗时（毫秒）
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="291">
+      BKDRHash
+    </td>
+    
+    <td align="center" width="175">
+      109
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="297">
+      SDBMHash
+    </td>
+    
+    <td align="center" width="179">
+      109
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="297">
+      RSHash
+    </td>
+    
+    <td align="center" width="181">
+      124
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="295">
+      APHash
+    </td>
+    
+    <td align="center" width="183">
+      187
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="294">
+      ELFHash
+    </td>
+    
+    <td align="center" width="184">
+      249
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="293">
+      JSHash
+    </td>
+    
+    <td align="center" width="185">
+      172
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="293">
+      DEKHash
+    </td>
+    
+    <td align="center" width="185">
+      140
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="293">
+      FNVHash
+    </td>
+    
+    <td align="center" width="185">
+      125
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="293">
+      DJBHash
+    </td>
+    
+    <td align="center" width="185">
+      125
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="293">
+      DJB2Hash
+    </td>
+    
+    <td align="center" width="185">
+      125
+    </td>
+  </tr>
+  
+  <tr>
+    <td valign="top" width="293">
+      PJWHash
+    </td>
+    
+    <td align="center" width="185">
+      234
+    </td>
+  </tr>
+</table>
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+**结论**：也许是我的样本存在一些特殊性，在对ASCII码字符串进行散列时，PJW与ELF Hash（它们其实是同一种算法）无论是质量还是效率，都相当糟糕；例如：&#8221;b5&#8243;与“aE&#8221;，这两个字符串按照PJW散列出来的hash值就是一样的。另外，其它几种依靠异或来散列的哈希函数，如：JS/DEK/DJB Hash，在对字母与数字组成的字符串的散列效果也不怎么好。相对而言，还是BKDR与SDBM这类简单的Hash效率与效果更好。
+
+&nbsp;
+
+**其他**：
+
+&nbsp;
+
+作者：[icefireelf][1]
+
+&nbsp;
+
+出处：<http://blog.csdn.net/icefireelf/article/details/5796529>
+
+<span style="font-family: monospace;"><br /> </span>
+
+ [1]: http://blog.csdn.net/icefireelf

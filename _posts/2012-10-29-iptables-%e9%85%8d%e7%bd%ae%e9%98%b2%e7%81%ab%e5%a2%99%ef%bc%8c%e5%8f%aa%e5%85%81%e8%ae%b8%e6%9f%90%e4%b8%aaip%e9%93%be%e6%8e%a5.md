@@ -1,0 +1,65 @@
+---
+title: iptables 配置防火墙，只允许某个IP链接
+author: codeboy
+layout: post
+permalink: /2012/10/29/iptables-%e9%85%8d%e7%bd%ae%e9%98%b2%e7%81%ab%e5%a2%99%ef%bc%8c%e5%8f%aa%e5%85%81%e8%ae%b8%e6%9f%90%e4%b8%aaip%e9%93%be%e6%8e%a5/
+categories:
+  - ubuntu配置
+tags:
+  - iptables
+  - 防火墙
+---
+安装好了虚拟机，为了host机器能够访问，使用了host_only,这样等于把虚拟机暴露在外网了，  
+为了安全期间，配置如下防火墙规则，这台机器只能够访问外网http服务，可以给host机器提供ssh,http等服务  
+iptables配置文件如下
+
+<pre>local_lising_port="22 80 8080 8081"
+accept_ip="192.168.56.1"
+can_output_port="80"
+#清除之前配置的规则
+iptables -F
+#不允许主动连接本机
+iptables -I INPUT -p tcp --syn -j DROP
+for port in $local_lising_port;
+do
+#允许host机器访问本机的特定端口
+iptables -I INPUT -p tcp -s $accept_ip --dport $port -j ACCEPT
+done
+
+iptables -I OUTPUT -p tcp -j DROP
+for port in $local_lising_port;
+do
+#允许本机的特定端口向host机器提供服务
+iptables -I OUTPUT -p tcp -d $accept_ip --sport $port -j ACCEPT
+done
+for port in $can_output_port;
+do
+#允许本机访问外网http服务
+iptables -I OUTPUT -p tcp --dport $port -j ACCEPT
+done</pre>
+
+<!--more-->
+
+<pre></pre>
+
+最终结果如下
+
+<pre>Chain INPUT (policy ACCEPT)
+target     prot opt source               destination
+ACCEPT     tcp  --  coder                anywhere            tcp dpt:tproxy
+ACCEPT     tcp  --  coder                anywhere            tcp dpt:http-alt
+ACCEPT     tcp  --  coder                anywhere            tcp dpt:www
+ACCEPT     tcp  --  coder                anywhere            tcp dpt:ssh
+DROP       tcp  --  anywhere             anywhere            tcp flags:FIN,SYN,RST,ACK/SYN
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+ACCEPT     tcp  --  anywhere             anywhere            tcp dpt:www
+ACCEPT     tcp  --  anywhere             coder               tcp spt:tproxy
+ACCEPT     tcp  --  anywhere             coder               tcp spt:http-alt
+ACCEPT     tcp  --  anywhere             coder               tcp spt:www
+ACCEPT     tcp  --  anywhere             coder               tcp spt:ssh
+DROP       tcp  --  anywhere             anywhere</pre>

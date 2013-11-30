@@ -1,0 +1,81 @@
+---
+title: ubuntu server 安装 LAMP
+author: codeboy
+layout: post
+permalink: /2012/05/14/ubuntu-server-%e5%ae%89%e8%a3%85-lamp/
+categories:
+  - ubuntu配置
+tags:
+  - LAMP
+  - php
+  - ubuntu
+---
+昨天倒好了空间，就像把php搞一搞，看看自己能在空间上改点啥，顺便就看看php  
+在虚拟机上装的ubuntu server顺带有lamp就直接装好了，但是其中还是有点曲折的，
+
+<!--more-->
+
+  
+1， 更新源，  
+原有的源太慢了，国内的sohu的源比较快，更改`/etc/apt/sources.list`文件
+
+替换原有的所有源，更新为
+
+<pre>deb http://mirrors.sohu.com/ubuntu/ natty main restricted
+deb-src http://mirrors.sohu.com/ubuntu/ natty main restricted
+deb http://mirrors.sohu.com/ubuntu/ natty-updates main restricted
+deb-src http://mirrors.sohu.com/ubuntu/ natty-updates main restricted
+deb http://mirrors.sohu.com/ubuntu/ natty universe
+deb-src http://mirrors.sohu.com/ubuntu/ natty universe
+deb http://mirrors.sohu.com/ubuntu/ natty-updates universe
+deb-src http://mirrors.sohu.com/ubuntu/ natty-updates universe
+deb http://mirrors.sohu.com/ubuntu/ natty multiverse
+deb-src http://mirrors.sohu.com/ubuntu/ natty multiverse
+deb http://mirrors.sohu.com/ubuntu/ natty-updates multiverse
+deb-src http://mirrors.sohu.com/ubuntu/ natty-updates multiverse
+deb http://mirrors.sohu.com/ubuntu/ natty-security main restricted
+deb-src http://mirrors.sohu.com/ubuntu/ natty-security main restricted
+deb http://mirrors.sohu.com/ubuntu/ natty-security universe
+deb-src http://mirrors.sohu.com/ubuntu/ natty-security universe
+deb http://mirrors.sohu.com/ubuntu/ natty-security multiverse
+deb-src http://mirrors.sohu.com/ubuntu/ natty-security multiverse
+deb http://archive.canonical.com/ubuntu natty partner
+deb-src http://archive.canonical.com/ubuntu natty partner
+deb http://extras.ubuntu.com/ubuntu natty main
+deb-src http://extras.ubuntu.com/ubuntu natty main</pre>
+
+再把所有的natty换成原来的版本代码，如oneiric。  
+2，安装lamp  
+`sudo tasksel`  
+安装lamp服务  
+下面apache服务已经开启了，但是新建文件php文件还是直接下载的，  
+3，更改配置文件/etc/apache2/httpd.conf，添加  
+ADDType application/x-httpd-php .php  
+ADDType application/x-httpd-php-source .phps  
+4，重启apache服务。  
+这个地方apache默认的用户名和组是www-data，所以重启的时候总是提示bad user name ${APACHE\_RUN\_USER}  
+在/etc/apache2/apache2.conf修改中显示如下  
+\# These need to be set in /etc/apache2/envvars  
+User ${APACHE\_RUN\_USER}  
+Group ${APACHE\_RUN\_GROUP}  
+而真正更改/etc/apache2/envvars之后，重启apache服务的时候还是提示这个错误，网上有人说是直接改/etc/apache2/apache2.conf，没有尝试，改了/etc/apache2/envvars之后我重启机器了。。。。  
+5，测试，在/var/www/下面加以一个文件index.php
+
+<pre>
+    
+    
+         <?php echo phpinfo() ?>
+    
+
+</pre>
+
+访问浏览器应该有如下的图片  
+[<img class="alignnone size-full wp-image-87" title="php" src="http://www.codeboy.name/wp-content/uploads/2012/05/4216612820120514161149049.jpg" alt="" width="599" height="613" />][1]  
+完
+
+参考文章  
+sohu源 <a href="http://haoningabc.iteye.com/blog/1050481" target="_blank"> http://haoningabc.iteye.com/blog/1050481</a>  
+配置php文件解析而不是下载 <a href="http://forum.ubuntu.org.cn/viewtopic.php?f=54&t=179690" target="_blank">http://forum.ubuntu.org.cn/viewtopic.php?f=54&t=179690</a>  
+bad user问题<a href="http://echohi.blog.51cto.com/1064627/237595" target="_blank">http://echohi.blog.51cto.com/1064627/237595</a>
+
+ [1]: http://www.codeboy.name/wp-content/uploads/2012/05/4216612820120514161149049.jpg
