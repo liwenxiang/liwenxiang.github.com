@@ -1,0 +1,43 @@
+---
+title: php连接mysql数据库
+author: codeboy
+layout: post
+permalink: /2012/05/14/php%e8%bf%9e%e6%8e%a5mysql%e6%95%b0%e6%8d%ae%e5%ba%93/
+categories:
+  - php
+tags:
+  - mysql
+  - php
+---
+搞好php,就想把原来在java那部分学的东西往php上套下试试，没有建表，直接使用mysql自带的数据库表。代码如下
+
+<pre><?php
+error_reporting(E_ALL);
+$mysqluser="root";
+$mysqlpassword="useyourpassword";
+try {
+    $pdo=new PDO("mysql:host=localhost;port=3306;dbname=mysql",$mysqluser,$mysqlpassword);
+    $user="root";
+    $sql="select host, user, password from user where user = ?";
+    $pdo->exec("set names 'utf8'");
+    $pdoStatement=$pdo->prepare($sql);
+    $pdoStatement->execute((array($user)));
+    $pdoStatement->bindColumn('host', $host);
+    $pdoStatement->bindColumn('user', $user);
+    $pdoStatement->bindColumn('password', $password);
+    while ($row = $pdoStatement->fetch(PDO::FETCH_BOUND)) {
+       echo $host;
+       echo "
+
+<br />";
+       echo $user;
+       echo "<br />";
+       echo $password;
+       echo "<br />";
+    }
+} catch (PDOException $e) {
+    print $e->getMessage();
+}
+echo "end";
+
+</pre>
