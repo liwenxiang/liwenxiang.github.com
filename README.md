@@ -36,6 +36,6 @@ The documentation website at <http://jekyllbootstrap.com> is maintained at https
 
 
 ## License
-test
+test测试
 
 [MIT](http://opensource.org/licenses/MIT)
