@@ -7,10 +7,10 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>web登录设计</title>
+	<title>使用exitwp从Wordpress倒入文章到jekyll</title>
 	<meta name="author" content="codeboy">
 	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
-	<!-- <link href="http://feeds.feedburner.com/" rel="alternate" title="web登录设计" type="application/atom+xml"> -->
+	<!-- <link href="http://feeds.feedburner.com/" rel="alternate" title="使用exitwp从Wordpress倒入文章到jekyll" type="application/atom+xml"> -->
 	<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script> -->
 </head>
 <body>
@@ -45,80 +45,44 @@
 			<header>
 				<div class="unit-head">
 					<div class="unit-inner unit-head-inner">
-						<h1 class="h2 entry-title">web登录设计</h1>
+						<h1 class="h2 entry-title">使用exitwp从Wordpress倒入文章到jekyll</h1>
 					</div><!-- unit-inner -->
 				</div><!-- unit-head -->
 			</header>
 
 			<div class="bd">
 				<div class="entry-content">
-					<h1 id='web'>web登录设计</h1>
-
-<h2 id='id2'>登录</h2>
-
-<ol>
-<li>服务端设置，登录页面https, 接受到口令之后，服务端新生成一个随机的sessionId 放到cookies中（如果客户端之前已经有sessionId了，用新生成的替换老的－会话固定攻击），然后设置cookies http-only和secure标识。</li>
-
-<li>保存用户密码：使用Md5(password + salt)存储，如果需要更强的加密效果，替换Md5为bcrypt 3. 验证码：最好不用 4. 是否允许浏览器的保存密码（安全妥协过程）</li>
-</ol>
-
-<h2 id='id3'>记住我</h2>
-
-<ol>
+					<ol>
 <li>
-<p>不要让cookie有权限访问所有的操作。下面的这些功能一定要用户重新输入口令：修改口令，消费等 2. 具体实现细节 1. 在cookie中，用户名，登录序列，登录token。 2. 用户名：明文存放。</p>
-
-<ol>
-<li>
-<p>登录序列：一个被MD5散列过的随机数，仅当强制用户输入口令时更新（如：用户修改了口令）。</p>
+<p>git clone git://github.com/thomasf/exitwp.git</p>
 </li>
 
 <li>
-<p>登录token：一个被MD5散列过的随机数，仅一个登录session内有效，新的登录session会更新它。</p>
+<p>sudo pip install &#8211;upgrade -r pip_requirements.txt</p>
 
-<ol>
-<li>登录token是单实例登录。意思就是一个用户只能有一个登录实例。</li>
+<blockquote>
+<p>可能需要创建文件~/.pip/pip.conf内容如下<br /><span>global</span><br />index-url = http://pypi.v2ex.com/simple</p>
+</blockquote>
+</li>
 
-<li>登录序列是用来做盗用行为检测的。如果用户的cookie被盗后，盗用者使用这个cookie访问网站时，我们的系统是以为是合法用户，然后更新“登录token”，而真正的用户回来访问时，系统发现只有“用户名”和“登录序列”相同，但是“登录token” 不对，这样的话，系统就知道，这个用户可能出现了被盗用的情况，于是，系统可以清除并更改登录序列 和 登录token，这样就可以令所有的cookie失效，并要求用户输入口令。并给警告用户系统安全。</li>
-</ol>
+<li>
+<p>更改config.yaml中的<code>target_format: html</code>这个是因为默认转换出md格式，可能又太多错误，还不如html正确性高</p>
+</li>
+
+<li>
+<p>python exitwp.py</p>
+</li>
+
+<li>
+<p>将build目录下面的_post/下的文件拷贝到自己的_posts/目录下面就可以了</p>
 </li>
 </ol>
-</li>
-</ol>
-
-<h2 id='id4'>找回密码</h2>
-
-<p>1. 不要使用安全问答：用户记不住，容易被社工 2. 保存好老的密码，发送一个唯一的url给注册邮箱，设置有效时间，用户点击之后可以设置新的密码（整个找回密码的功能必须是安全的：发送的url事https的，设置密码页面也是https的）</p>
-
-<h2 id='id5'>检查密码强度</h2>
-
-<p>1. 简单的字符复杂度 2. 键盘复杂度(asdfghjkl这种)</p>
-
-<h2 id='id6'>防范暴力测试登录密码</h2>
-
-<p>1. 多次失败之后验证码， 2. 锁定账户，需要邮件解锁 3. 每次失败尝试之后，延迟， 1次失败，1s之后才能重新登录，2次失败，4s之后才能重新登录，3次失败，1分钟之后才能重新登录</p>
-
-<h2 id='id7'>分布式的攻击方式</h2>
-
-<ol>
-<li>在多个僵尸网络发起攻击，防止IP被屏蔽</li>
-
-<li>使用最常用的1个密码，对所有用户进行登录尝试，而不是每一个用户进行常用的500个密码尝试</li>
-
-<li>登录用户1，登录用户2， 登录用户3， 再循环登录用户1， 这样就避免了对用户1的登录延迟作用。 4. 防范方式，纪录网站的登录失败次数，如果有大幅变化，报警处理（比如延缓所有用户的登录时间)</li>
-</ol>
-
-<h2 id='id8'>双重认证</h2>
-
-<p>1. 比如密码加手机验证码</p>
-
-<p><a href='http://coolshell.cn/articles/5353.html'>http://coolshell.cn/articles/5353.html</a> <a href='http://stackoverflow.com/questions/549/the-definitive-guide-to-form-based-website-authentication'>http://stackoverflow.com/questions/549/the-definitive-guide-to-form-based-website-authentication</a> <a href='http://www.cnblogs.com/lixiong/archive/2011/12/24/2300098.html'>http://www.cnblogs.com/lixiong/archive/2011/12/24/2300098.html</a></p>
 					<div class="meta">
 						<p class="date-publish">
 							Published: 
-							<date class="date-pub" title="2013-12-01T00:00:00+08:00" datetime="2013-12-01T00:00:00+08:00" pubdate>
+							<date class="date-pub" title="2013-12-12T00:00:00+08:00" datetime="2013-12-12T00:00:00+08:00" pubdate>
 							<span class="month"><abbr>December</abbr></span>
-							<span class="day">01</span>
+							<span class="day">12</span>
 							<span class="year">2013</span>
 							</date>
 						</p>
@@ -145,6 +109,8 @@
 
 
   
+     
+    	<li><a href="/tags.html#建站-ref">建站 <span>2</span></a></li>
     
   
 
@@ -191,13 +157,9 @@ var duoshuoQuery = {short_name:"codeboyname"};
 					<nav class="pagination">
 						<ul>
 							
-							<li class="prev"><a class="internal" rel="prev"  href="/%E6%9C%AA%E5%88%86%E7%B1%BB/2013/11/16/e5a682e4bd95e8aebee8aea1e7bd91e9a1b5e799bbe5bd95e7b3bbe7bb9f" title="View 如何设计网页登录系统">&laquo; 如何设计网页登录系统</a></li>
+							<li class="prev"><a class="internal" rel="prev"  href="/web/2013/12/01/web_login_design" title="View web登录设计">&laquo; web登录设计</a></li>
 							
 							
-							<li class="pipe"> | </li>
-							
-							
-							<li class="next"><a class="internal" rel="next"  href="/web/2013/12/12/import_from_wordpress_to_jekyll" title="View 使用exitwp从Wordpress倒入文章到jekyll">使用exitwp从Wordpress倒入文章到jekyll &raquo;</a></li>
 							
 						</ul>
 					</nav>
@@ -245,7 +207,7 @@ var duoshuoQuery = {short_name:"codeboyname"};
 	// 	};
 	// load('//platform.twitter.com/widgets.js', 'tweetjs');
 	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
-	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/web/2013/12/01/web_login_design" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/web/2013/12/12/import_from_wordpress_to_jekyll" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
 	}(document, 'script'));
 </script>
 <script>

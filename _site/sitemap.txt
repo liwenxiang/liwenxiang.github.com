@@ -9,6 +9,7 @@ http://liwenxiang.github.io/rss.xml
 http://liwenxiang.github.io/sitemap.txt
 http://liwenxiang.github.io/tags.html
 
+http://liwenxiang.github.io/web/2013/12/12/import_from_wordpress_to_jekyll
 http://liwenxiang.github.io/web/2013/12/01/web_login_design
 http://liwenxiang.github.io/%E6%9C%AA%E5%88%86%E7%B1%BB/2013/11/16/e5a682e4bd95e8aebee8aea1e7bd91e9a1b5e799bbe5bd95e7b3bbe7bb9f
 http://liwenxiang.github.io/%E6%9C%AA%E5%88%86%E7%B1%BB/2013/10/24/e7bd91e9a1b5e7b1bbe59e8be6b187e680bb

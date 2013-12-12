@@ -79,8 +79,8 @@ JB :
   comments :
     provider : duoshuo
     duoshuo :
-    disqus :
-      short_name : jekyllbootstrap
+    # disqus :
+    #   short_name : jekyllbootstrap
    
   sharing :
     provider : false

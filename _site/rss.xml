@@ -5,10 +5,42 @@
         <description>codeboy - codeboy</description>
         <link>http://liwenxiang.github.io</link>
         <link>http://liwenxiang.github.io</link>
-        <lastBuildDate>2013-12-12T22:55:44+08:00</lastBuildDate>
-        <pubDate>2013-12-12T22:55:44+08:00</pubDate>
+        <lastBuildDate>2013-12-12T23:29:04+08:00</lastBuildDate>
+        <pubDate>2013-12-12T23:29:04+08:00</pubDate>
         <ttl>1800</ttl>
 
+
+        <item>
+                <title>使用exitwp从Wordpress倒入文章到jekyll</title>
+                <description>&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;git clone git://github.com/thomasf/exitwp.git&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;
+&lt;p&gt;sudo pip install &amp;#8211;upgrade -r pip_requirements.txt&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;可能需要创建文件~/.pip/pip.conf内容如下&lt;br /&gt;&lt;span&gt;global&lt;/span&gt;&lt;br /&gt;index-url = http://pypi.v2ex.com/simple&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+
+&lt;li&gt;
+&lt;p&gt;更改config.yaml中的&lt;code&gt;target_format: html&lt;/code&gt;这个是因为默认转换出md格式，可能又太多错误，还不如html正确性高&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;
+&lt;p&gt;python exitwp.py&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;
+&lt;p&gt;将build目录下面的_post/下的文件拷贝到自己的_posts/目录下面就可以了&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</description>
+                <link>http://liwenxiang.github.io/web/2013/12/12/import_from_wordpress_to_jekyll</link>
+                <guid>http://liwenxiang.github.io/web/2013/12/12/import_from_wordpress_to_jekyll</guid>
+                <pubDate>2013-12-12T00:00:00+08:00</pubDate>
+        </item>
 
         <item>
                 <title>web登录设计</title>
