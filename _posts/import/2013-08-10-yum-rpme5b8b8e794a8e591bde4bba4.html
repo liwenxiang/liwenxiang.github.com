@@ -1,0 +1,69 @@
+---
+author: liwenxiang
+comments: true
+date: 2013-08-10 13:00:27+00:00
+layout: post
+slug: yum-rpm%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4
+title: yum rpm常用命令
+wordpress_id: 375
+categories:
+- shell
+---
+
+<pre>
+查看系统安装的软件
+rpm -q gbase
+查看所有的软件
+rpm -qa
+查看本地rpm文件信息
+rpm -qpi vnc-server-4.0-0.beta4.3.2.i386.rpm
+查看本地rpm文件依赖关系
+rpm -qpR package.rpm
+查看机器安装的软件依赖yumyum
+rpm -qR kernel
+
+查看系统的一个文件是那个rpm包安装上来的
+rpm -qf /usr/bin/testbin
+
+显示安装的文件
+rpm -ql gbase
+rpm -qpl  abc.rpm
+
+测试安装，看会产生什么问题，
+rpm -iv --test new-kernel.rpm
+rpm -ivv --test new-kernel.rpm更详细的信息
+
+
+yum 使用
+
+sudo yum clean all
+清除所有缓存，经常search不到的时候可以用到
+
+yum install gbase --installroot
+installroot指定安装的目录，不安装到系统目录
+
+yum search gbase
+查看本地或者yum源上面是否有此软件
+
+yum list gbase --showduplicates
+列出yum源一个软件的所有版本号
+
+yum deplist gbase-0.0.8-rc_1
+查看软件的依赖
+
+yum info gbase
+查看一个软件的信息，版本号之类的，但是没有依赖显示
+    
+yum localinstall tmp.rpm
+安装本地的rpm包，但是使用yum来解决依赖问题
+yum源上一个软件的名称
+name
+name.arch
+name-ver
+name-ver-rel
+name-ver-rel.arch
+name-epoch:ver-rel.arch
+epoch:name-ver-rel.arch
+常用gbase-0.0.8-rc_1.x86_64， gbase-0.0.8  gbase.x86_64
+</pre>
+更更详细的选项可以看man rpm 或者man yum, yum -h等方法

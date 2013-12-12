@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>修改默认配置使得php页面错误信息显示出来(zz)</title>
+	<meta name="author" content="codeboy">
+	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
+	<!-- <link href="http://feeds.feedburner.com/" rel="alternate" title="修改默认配置使得php页面错误信息显示出来(zz)" type="application/atom+xml"> -->
+	<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script> -->
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<nav class="nav-global">
+					<ul>
+						<li class="logo"><a href="/">codeboy</a></li>
+						<li class="archive"><a href="/archive.html">文章</a></li>
+						<li class="page"><a href="/pages.html">页面</a></li>
+						<li class="category"><a href="/categories.html">分类</a></li>
+						<li class="tag"><a href="/tags.html">标签</a></li>
+						<li class="about_me"><a href="/about.html">关于我</a></li>
+						<!-- <li class="forkme"><div><iframe src="http://markdotto.github.com/github&#45;buttons/github&#45;btn.html?user=plusjade&#38;repo=jekyll&#45;bootstrap&#38;type=fork&#38;count=true" -->
+						<!-- 			allowtransparency="true" frameborder="0" scrolling="0" width="95px" height="20px"></iframe></div></li> -->
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">修改默认配置使得php页面错误信息显示出来(zz)</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					使用PHP Apache编程，在缺省设置下，PHP编码错误是不会提示的，这对于开发来说，是很不方便的。可以使用以下步骤打开出错提示：
+1. 打开php.ini文件。
+以我的ubuntu为例，这个文件在： /etc/php5/apache2 目录下。
+2. 搜索并修改下行，把Off值改成On
+display_errors = Off
+3. 搜索下行
+error_reporting = E_ALL &amp; ~E_NOTICE
+或者搜索：
+error_reporting = E_ALL &amp; ~E_DEPRECATED
+修改为
+error_reporting = E_ALL | E_STRICT
+4. 修改Apache的 httpd.conf，
+以我的 Ubuntu 为例， 这个文件在：/etc/apache2/ 目录下，这是一个空白文件。
+添加以下两行：
+php_flag display_errors on
+php_value error_reporting 2039
+5. 重启Apache，就OK了。
+重启命令： ：sudo /etc/init.d/apache2 restart
+
+转载自<a href="http://www.phptogether.com/archives/7491">http://www.phptogether.com/archives/7491</a>
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2012-05-14T14:50:20Z" datetime="2012-05-14T14:50:20Z" pubdate>
+							<span class="month"><abbr>May</abbr></span>
+							<span class="day">14</span>
+							<span class="year">2012</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#php-ref">
+    		php <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#ubuntu配置-ref">
+    		ubuntu配置 <span>5</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#apache-ref">apache <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#php-ref">php <span>3</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<!-- <div class="social"> -->
+					<!-- 	<ul class="list&#45;linear"> -->
+					<!-- 		<li><div class="twitter&#45;tweet"><a href="https://twitter.com/share" class="twitter&#45;share&#45;button" data&#45;count="horizontal" data&#45;via="" data&#45;lang="en">Tweet</a></div></li> -->
+					<!-- 		<li><div class="twitter&#45;follow"><a href="https://twitter.com/" class="twitter&#45;follow&#45;button" data&#45;show&#45;count="false" data&#45;lang="en"></a></div></li> -->
+					<!-- 	</ul> -->
+					<!-- </div> -->
+					<div class="comment">
+					
+
+
+  <!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"codeboyname"};
+(function() {
+ var ds = document.createElement('script');
+ ds.type = 'text/javascript';ds.async = true;
+ ds.src = 'http://static.duoshuo.com/embed.js';
+ ds.charset = 'UTF-8';
+ (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+ })();
+</script>
+<!-- Duoshuo Comment END -->
+
+
+
+
+
+					</div>
+				</div><!-- misc-content -->
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/php/2012/05/14/phpe8bf9ee68ea5mysqle695b0e68daee5ba93" title="View php连接mysql数据库">&laquo; php连接mysql数据库</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/%E8%BD%AC%E8%BD%BD/2012/05/15/e885bee8aeafe5beaee4bfa1e68a80e69cafe680bbe79b91e591a8e9a2a2efbc9ae4b880e4babfe794a8e688b7e5a29ee995bfe8838ce5908ee79a84e69eb6e69e84" title="View 腾讯微信技术总监周颢：一亿用户增长背后的架构秘密(zz)">腾讯微信技术总监周颢：一亿用户增长背后的架构秘密(zz) &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<!-- <li class="contact"><address><span class="author fn n">codeboy</span> &#45; <span class="fn email"></span></address></li> -->
+						<li class="github"><a href="http://github.com/liwenxiang/" rel="me">github.com/liwenxiang</a></li>
+						<!-- <li class="twitter"><a href="http://twitter.com//" rel="me">twitter.com/</a></li> -->
+						<!-- <li class="rss"><a href="http://feeds.feedburner.com/">Subscribe to RSS Feed</a></li> -->
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	// (function(d, s) {
+	// 	var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+	// 	if (d.getElementById(id)) {return;}
+	// 	js = d.createElement(s); js.src = url; js.id = id;
+	// 	fjs.parentNode.insertBefore(js, fjs);
+	// 	};
+	// load('//platform.twitter.com/widgets.js', 'tweetjs');
+	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/php/ubuntu%E9%85%8D%E7%BD%AE/2012/05/14/e4bfaee694b9e9bb98e8aea4e9858de7bdaee4bdbfe5be97phpe9a1b5e99da2e99499e8afafe4bfa1e681afe698bee7a4bae587bae69da5zz" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+  
+  
+</body>
+</html>
+

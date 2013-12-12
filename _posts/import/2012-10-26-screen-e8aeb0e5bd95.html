@@ -1,0 +1,24 @@
+---
+author: liwenxiang
+comments: true
+date: 2012-10-26 16:22:17+00:00
+layout: post
+slug: screen-%e8%ae%b0%e5%bd%95
+title: screen 记录
+wordpress_id: 268
+categories:
+- shell
+- 安装配置
+---
+
+~/.screenrc文件内容
+
+hardstatus on
+hardstatus alwayslastline "%{=b}%{b}%-w%{.BW}%10&gt;%n*%t%{-}%+w%&lt; %=%{kG}%C%A %D, %Y-%m-%d"
+
+C-A C-G消除闪屏
+
+C-A [ 进入复制模式，用hjkl移动光标，空格选中开始点，再次按空格选择结束点，进行复制
+C-A ] 粘贴
+
+C-A "   显示所有窗口列表

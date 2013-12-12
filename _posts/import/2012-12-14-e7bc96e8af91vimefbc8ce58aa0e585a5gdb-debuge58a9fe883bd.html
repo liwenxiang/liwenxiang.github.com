@@ -1,0 +1,15 @@
+---
+author: liwenxiang
+comments: true
+date: 2012-12-14 18:05:03+00:00
+layout: post
+slug: '%e7%bc%96%e8%af%91vim%ef%bc%8c%e5%8a%a0%e5%85%a5gdb-debug%e5%8a%9f%e8%83%bd'
+title: 编译vim，加入gdb debug功能
+wordpress_id: 309
+categories:
+- vim
+tags:
+- vim
+---
+
+<p>下载vim7.2源代码</p>  <p><a title="ftp://ftp.vim.org/pub/vim/unix/vim-7.3.tar.bz2" href="ftp://ftp.vim.org/pub/vim/unix/vim-7.3.tar.bz2">ftp://ftp.vim.org/pub/vim/unix/vim-7.3.tar.bz2</a></p>  <p>下载vimgdb的patch代码</p>  <p><a href="http://nchc.dl.sourceforge.net/project/clewn/vimGdb/vimgdb72-1.14/vimgdb72-1.14.tar.gz">http://nchc.dl.sourceforge.net/project/clewn/vimGdb/vimgdb72-1.14/vimgdb72-1.14.tar.gz</a></p>  <p>解压</p>  <p>tar xjf vim-7.2.tar.bz2   <br />tar xzf vimgdb72-1.14.tar.gz</p>  <p>patch -d vim72 --backup -p0 &lt; vimgdb/vim72.diff</p>  <p>cd vim72/src</p>  <p>编辑Makefile文件</p>  <p>打开</p>  <p>CONF_OPT_GUI = --disable-gui</p>  <p>CONF_OPT_FEAT = --with-features=huge</p>  <p>CONF_OPT_INPUT = --enable-xim</p>  <p>CONF_OPT_MULTIBYTE = --enable-multibyte</p>  <p>CONF_OPT_GDB = --enable-gdb</p>  <p>首先测试下make test，可能有如下错误</p>  <p>checking for tgetent()... configure: error: NOT FOUND!   <br />You need to install a terminal library: for example ncurses.    <br />Or specify the name of the library with --with-tlib.</p>  <p>需要安装libncurses5-dev，</p>  <p>安装之后再make test，如果可以了</p>  <p>make clean ，</p>  <p>make CFLAGS=&quot;-O2 -D_FORTIFY_SOURCE=1&quot; (没加的话安装之后每次使用vim都是显示*** buffer overflow detected ***: vim terminated)</p>  <p>sudo make install</p>  <p>把vimgdb下面的vimgdb_runtime.tgz解压到.vim目录</p>  <p>打开vim， </p>  <p>：helptag ~/.vim/doc/</p>  <p>: help vimgdb</p>

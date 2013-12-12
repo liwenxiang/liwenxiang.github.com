@@ -1,0 +1,25 @@
+---
+author: liwenxiang
+comments: true
+date: 2012-11-25 14:52:25+00:00
+layout: post
+slug: awk%e4%b8%ad%e4%bd%bf%e7%94%a8shell%e5%ae%9a%e4%b9%89%e7%9a%84%e5%8f%98%e9%87%8f
+title: awk中使用shell定义的变量
+wordpress_id: 298
+categories:
+- shell
+---
+
+<pre>
+str='bbb'
+awk '{if ("'$str'"==$i) {print $i}}'  b
+其中使用shell变量的方法是"'$shell'"
+
+ps单引号，双引号的区别
+单引号,里面是什么就输出什么，
+echo '`date`'
+显示 `date`
+双引号，会做变量替换echo "`date`"
+显示 Sun Nov 25 22:39:59 CST 2012
+</pre>
+今天去找引号的问题，刚好找到了awk用shell变量的方法，之前不会搞这个，把awk整个用echo显示出来，然后管道传给sh 囧,这下终于方便了

@@ -1,0 +1,30 @@
+---
+author: liwenxiang
+comments: true
+date: 2013-05-28 15:37:25+00:00
+layout: post
+slug: '%e8%84%9a%e6%9c%ac%e7%9a%84%e9%ad%85%e5%8a%9b'
+title: 脚本的魅力
+wordpress_id: 341
+categories:
+- 未分类
+---
+
+在一个软件网站看到一个美女时钟的介绍，然后到<a href="http://www.sodao.com/" title="http://www.sodao.com/" target="_blank">www.sodao.com</a>中看了下，熟悉的右键查看元素，grep了下就看到网页图片的地址了,一个for循环，一天，就可以拿到所有图片信息了
+ <pre>
+for i in `seq 0 1440`;
+do
+curl "http://www.sodao.com/"  | grep "http://imgcache.mysodao.com"| grep 'width="600"' | awk -F 'src="' '{print $2}' | awk -F '" width' '{print $1}' >> data/`date +%H-%M`
+sleep 60
+done
+<pre>
+1天跑下来，所有的数据就都有了
+买的这个虚拟主机不支持ssh，所有在php里面套了一个 bash脚本，搞了下, 这个机器的sort又不支持-R参数，用awk搞了下随即
+<pre>
+echo.sh的代码
+cat data/`date +%H-%M`| awk 'BEGIN{srand()}{printf("%s_____ <img alt src=\"%s\">\n", rand(), $1)}' | sort -k1,1n | awk -F"_____" '{print $2}' | head -1
+echo.php的代码
+<?php system("sh echo.sh") ?>
+</pre>
+
+哈哈，done 

@@ -54,7 +54,7 @@
 				<div class="entry-content">
 					<h1 id='web'>web登录设计</h1>
 
-<h2 id='id426'>登录</h2>
+<h2 id='id2'>登录</h2>
 
 <ol>
 <li>服务端设置，登录页面https, 接受到口令之后，服务端新生成一个随机的sessionId 放到cookies中（如果客户端之前已经有sessionId了，用新生成的替换老的－会话固定攻击），然后设置cookies http-only和secure标识。</li>
@@ -62,7 +62,7 @@
 <li>保存用户密码：使用Md5(password + salt)存储，如果需要更强的加密效果，替换Md5为bcrypt 3. 验证码：最好不用 4. 是否允许浏览器的保存密码（安全妥协过程）</li>
 </ol>
 
-<h2 id='id427'>记住我</h2>
+<h2 id='id3'>记住我</h2>
 
 <ol>
 <li>
@@ -86,19 +86,19 @@
 </li>
 </ol>
 
-<h2 id='id428'>找回密码</h2>
+<h2 id='id4'>找回密码</h2>
 
 <p>1. 不要使用安全问答：用户记不住，容易被社工 2. 保存好老的密码，发送一个唯一的url给注册邮箱，设置有效时间，用户点击之后可以设置新的密码（整个找回密码的功能必须是安全的：发送的url事https的，设置密码页面也是https的）</p>
 
-<h2 id='id429'>检查密码强度</h2>
+<h2 id='id5'>检查密码强度</h2>
 
 <p>1. 简单的字符复杂度 2. 键盘复杂度(asdfghjkl这种)</p>
 
-<h2 id='id430'>防范暴力测试登录密码</h2>
+<h2 id='id6'>防范暴力测试登录密码</h2>
 
 <p>1. 多次失败之后验证码， 2. 锁定账户，需要邮件解锁 3. 每次失败尝试之后，延迟， 1次失败，1s之后才能重新登录，2次失败，4s之后才能重新登录，3次失败，1分钟之后才能重新登录</p>
 
-<h2 id='id431'>分布式的攻击方式</h2>
+<h2 id='id7'>分布式的攻击方式</h2>
 
 <ol>
 <li>在多个僵尸网络发起攻击，防止IP被屏蔽</li>
@@ -108,7 +108,7 @@
 <li>登录用户1，登录用户2， 登录用户3， 再循环登录用户1， 这样就避免了对用户1的登录延迟作用。 4. 防范方式，纪录网站的登录失败次数，如果有大幅变化，报警处理（比如延缓所有用户的登录时间)</li>
 </ol>
 
-<h2 id='id432'>双重认证</h2>
+<h2 id='id8'>双重认证</h2>
 
 <p>1. 比如密码加手机验证码</p>
 
@@ -191,7 +191,7 @@ var duoshuoQuery = {short_name:"codeboyname"};
 					<nav class="pagination">
 						<ul>
 							
-							<li class="prev"><a class="internal" rel="prev"  href="/2011/12/29/jekyll-introduction" title="View Jekyll Introduction">&laquo; Jekyll Introduction</a></li>
+							<li class="prev"><a class="internal" rel="prev"  href="/%E6%9C%AA%E5%88%86%E7%B1%BB/2013/11/16/e5a682e4bd95e8aebee8aea1e7bd91e9a1b5e799bbe5bd95e7b3bbe7bb9f" title="View 如何设计网页登录系统">&laquo; 如何设计网页登录系统</a></li>
 							
 							
 							

@@ -1,0 +1,40 @@
+---
+author: liwenxiang
+comments: true
+date: 2013-05-18 11:06:03+00:00
+layout: post
+slug: web-pypexpect
+title: web.py+pexpect
+wordpress_id: 329
+categories:
+- 未分类
+---
+
+今天没事倒到了python的web.py的web框架，好简单。。。顺便用了下pexpect,加起来不到30行代码，美女时钟，哈哈
+<pre>import random
+
+import sys
+sys.path.append("/home/youdata/python/lib/lib/python2.7/site-packages/")
+import web
+import pexpect
+
+urls = (
+    '/(.*)', 'default',
+)
+class default:
+    def GET(self, name):
+        if not name:
+            name = "world"
+        data = "curl \"http://www.sodao.com/\" 2&gt;/dev/null | grep \"http://imgcache.mysodao.com\"| grep \'width=\"600\"\'"
+        child = pexpect.spawn('/bin/bash', ['-c', data], timeout=10, maxread=1024*1024)
+        index = child.expect([pexpect.EOF, pexpect.TIMEOUT])
+        if index != 0 :
+            return str(name) + "\n time out"
+
+        imgs = child.before.split("\n")
+        index = random.randint(0, len(imgs) - 2)
+        return "" + imgs[index] + ""
+
+if __name__ == "__main__":
+    app = web.application(urls, globals())
+    app.run()</pre>

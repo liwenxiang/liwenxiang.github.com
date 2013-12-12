@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>sed 记录</title>
+	<meta name="author" content="codeboy">
+	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
+	<!-- <link href="http://feeds.feedburner.com/" rel="alternate" title="sed 记录" type="application/atom+xml"> -->
+	<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script> -->
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<nav class="nav-global">
+					<ul>
+						<li class="logo"><a href="/">codeboy</a></li>
+						<li class="archive"><a href="/archive.html">文章</a></li>
+						<li class="page"><a href="/pages.html">页面</a></li>
+						<li class="category"><a href="/categories.html">分类</a></li>
+						<li class="tag"><a href="/tags.html">标签</a></li>
+						<li class="about_me"><a href="/about.html">关于我</a></li>
+						<!-- <li class="forkme"><div><iframe src="http://markdotto.github.com/github&#45;buttons/github&#45;btn.html?user=plusjade&#38;repo=jekyll&#45;bootstrap&#38;type=fork&#38;count=true" -->
+						<!-- 			allowtransparency="true" frameborder="0" scrolling="0" width="95px" height="20px"></iframe></div></li> -->
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">sed 记录</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					以前看的sed的东西，记录下，防止忘掉，
+<!--more-->
+<pre>
+sed基本模式
+[address]s/pattern/replacement/flags
+
+sed可用参数
+sed -n   默认sed输出所有的行，此参数表示不输出，常和flag的p配合使用，如   sed -n s/a//p x.txt 表示将x.txt中的所有出现a的行换成b并输出
+sed -i sed默认不修改文件而是输出到stdout,此参数表示修改回源文件
+
+
+1, 其中的地址可以用正则表达式来表示
+    一个完整的例子如
+    a.txt 内容
+    11ce
+    121c
+    21c
+    执行sed -n '/^1/s/e$/x/p' a.txt将打印出来  
+    11cx
+    其中地址是/^1/   pattern是e$   替换为x 最后打印出结果
+
+2在replacement中的特殊字符
+    1,  &表示pattern匹配的内容
+    如a.txt内容
+    2nc
+    3abcpwd
+    执行 sed -n 's/^3/as 3 begin line content is  &/p' a 将打印出
+    as 3 begin line content is  3abcpwd
+    2,  \n表示在pattern中指定的第几个东西，由\(pattern\)指定  \n这个n数字以1开头，
+    如下例a.txt内容
+    2nc
+    abcpwd
+    执行 sed -n 's/\(abc\)\(pwd\)/first is \1, and second is \2/p' a  将打印出
+    first is abc, and second is pwd
+    3,  \用来转义，及添加回车等
+
+3, 其中flags有
+    n 表示对第几次匹配的情况进行替换,sed 默认只匹配第一次
+    g 对所有匹配进行替换
+    p 对匹配的进行打印出来
+    W file 保存到文件 file
+
+目录下有如下文件
+0_unread
+1_unread
+2_unread
+3_unread
+4_unread
+5_unread
+6_unread
+7_unread
+8_unread
+9_unread
+10_unread
+将其全部转换成_readed后缀
+ls --color=none| grep ".*_unread" | sed -n "s/\(.*\)_unread$/mv \0 \1_readed/p" | /bin/bash
+</pre>
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2012-06-04T14:09:27Z" datetime="2012-06-04T14:09:27Z" pubdate>
+							<span class="month"><abbr>June</abbr></span>
+							<span class="day">04</span>
+							<span class="year">2012</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#shell-ref">
+    		shell <span>4</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#shell-ref">shell <span>1</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<!-- <div class="social"> -->
+					<!-- 	<ul class="list&#45;linear"> -->
+					<!-- 		<li><div class="twitter&#45;tweet"><a href="https://twitter.com/share" class="twitter&#45;share&#45;button" data&#45;count="horizontal" data&#45;via="" data&#45;lang="en">Tweet</a></div></li> -->
+					<!-- 		<li><div class="twitter&#45;follow"><a href="https://twitter.com/" class="twitter&#45;follow&#45;button" data&#45;show&#45;count="false" data&#45;lang="en"></a></div></li> -->
+					<!-- 	</ul> -->
+					<!-- </div> -->
+					<div class="comment">
+					
+
+
+  <!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"codeboyname"};
+(function() {
+ var ds = document.createElement('script');
+ ds.type = 'text/javascript';ds.async = true;
+ ds.src = 'http://static.duoshuo.com/embed.js';
+ ds.charset = 'UTF-8';
+ (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+ })();
+</script>
+<!-- Duoshuo Comment END -->
+
+
+
+
+
+					</div>
+				</div><!-- misc-content -->
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/%E7%A8%8B%E5%BA%8F%E8%AF%AD%E8%A8%80%E5%B0%8F%E8%AE%B0%E5%BD%95/2012/06/04/e6b5b7e9878fe794a8e688b7e7a7afe58886e68e92e5908de7ae97e6b395e68ea2e8aea8" title="View 海量用户积分排名算法探讨">&laquo; 海量用户积分排名算法探讨</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/%E7%A8%8B%E5%BA%8F%E8%AF%AD%E8%A8%80%E5%B0%8F%E8%AE%B0%E5%BD%95/%E8%BD%AC%E8%BD%BD/2012/06/06/how-to-analyze-java-thread-dumps-cubrid-blog" title="View How to Analyze Java Thread Dumps(zz)">How to Analyze Java Thread Dumps(zz) &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<!-- <li class="contact"><address><span class="author fn n">codeboy</span> &#45; <span class="fn email"></span></address></li> -->
+						<li class="github"><a href="http://github.com/liwenxiang/" rel="me">github.com/liwenxiang</a></li>
+						<!-- <li class="twitter"><a href="http://twitter.com//" rel="me">twitter.com/</a></li> -->
+						<!-- <li class="rss"><a href="http://feeds.feedburner.com/">Subscribe to RSS Feed</a></li> -->
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	// (function(d, s) {
+	// 	var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+	// 	if (d.getElementById(id)) {return;}
+	// 	js = d.createElement(s); js.src = url; js.id = id;
+	// 	fjs.parentNode.insertBefore(js, fjs);
+	// 	};
+	// load('//platform.twitter.com/widgets.js', 'tweetjs');
+	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/shell/2012/06/04/sed-e8aeb0e5bd95" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+  
+  
+</body>
+</html>
+

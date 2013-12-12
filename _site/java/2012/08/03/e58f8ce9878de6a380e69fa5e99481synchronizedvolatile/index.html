@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>双重检查锁,synchronized,volatile</title>
+	<meta name="author" content="codeboy">
+	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
+	<!-- <link href="http://feeds.feedburner.com/" rel="alternate" title="双重检查锁,synchronized,volatile" type="application/atom+xml"> -->
+	<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script> -->
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<nav class="nav-global">
+					<ul>
+						<li class="logo"><a href="/">codeboy</a></li>
+						<li class="archive"><a href="/archive.html">文章</a></li>
+						<li class="page"><a href="/pages.html">页面</a></li>
+						<li class="category"><a href="/categories.html">分类</a></li>
+						<li class="tag"><a href="/tags.html">标签</a></li>
+						<li class="about_me"><a href="/about.html">关于我</a></li>
+						<!-- <li class="forkme"><div><iframe src="http://markdotto.github.com/github&#45;buttons/github&#45;btn.html?user=plusjade&#38;repo=jekyll&#45;bootstrap&#38;type=fork&#38;count=true" -->
+						<!-- 			allowtransparency="true" frameborder="0" scrolling="0" width="95px" height="20px"></iframe></div></li> -->
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">双重检查锁,synchronized,volatile</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					以前看java并发编程实践的时候，大致看了下，说双重检查加锁有问题，也没有细看原因。看到邮件列表里面有这个东西，觉得synchronized会更好，
+回去把书又翻了下，其实因为变量使用了volatile，已经把原来的缺陷避免了，
+如果不使用volatile的话，有可能第一个线程A调用了构造函数，abc已经不为null了，但是对另一个线程可能是不可见的，看到还是abc还是null，于是就进到里面去了，就有可能导致构造了两个出来，
+使用了volatile之后，第一个线程的更改对其他线程是立即可见的。也就避免了上述问题。
+
+<pre>
+public class WanLiang extends AliPeople{
+
+    private String name = "test";
+    private volatile static WanLiang abc;
+
+    private WanLiang() {}
+    public static WanLiang getInstance() {
+        if (abc == null) {
+            //双重检查加锁
+            synchronized (WanLiang.class) {
+                if (abc == null) {
+                    abc = new WanLiang();
+                }
+            }
+        }
+        return wanLiang;
+    }
+</pre>
+
+后记：去翻了下书，发现还有好多书要去看，好多知识去补。。。。从今天起，停止微博，人人一个月
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2012-08-03T14:03:16Z" datetime="2012-08-03T14:03:16Z" pubdate>
+							<span class="month"><abbr>August</abbr></span>
+							<span class="day">03</span>
+							<span class="year">2012</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#java-ref">
+    		java <span>2</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#多线程-ref">多线程 <span>1</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<!-- <div class="social"> -->
+					<!-- 	<ul class="list&#45;linear"> -->
+					<!-- 		<li><div class="twitter&#45;tweet"><a href="https://twitter.com/share" class="twitter&#45;share&#45;button" data&#45;count="horizontal" data&#45;via="" data&#45;lang="en">Tweet</a></div></li> -->
+					<!-- 		<li><div class="twitter&#45;follow"><a href="https://twitter.com/" class="twitter&#45;follow&#45;button" data&#45;show&#45;count="false" data&#45;lang="en"></a></div></li> -->
+					<!-- 	</ul> -->
+					<!-- </div> -->
+					<div class="comment">
+					
+
+
+  <!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"codeboyname"};
+(function() {
+ var ds = document.createElement('script');
+ ds.type = 'text/javascript';ds.async = true;
+ ds.src = 'http://static.duoshuo.com/embed.js';
+ ds.charset = 'UTF-8';
+ (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+ })();
+</script>
+<!-- Duoshuo Comment END -->
+
+
+
+
+
+					</div>
+				</div><!-- misc-content -->
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/%E7%AE%97%E6%B3%95/%E8%BD%AC%E8%BD%BD/2012/07/29/e5ad97e7aca6e4b8b2hashe587bde695b0e5afb9e6af94efbc88zzefbc89" title="View 字符串Hash函数对比（zz）">&laquo; 字符串Hash函数对比（zz）</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/%E5%BF%83%E6%83%85/2012/08/24/e6b7bbe58aa0e4b880e4b8aae7ae80e58d95e68f92e4bbb6" title="View 添加一个“简单”插件">添加一个“简单”插件 &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<!-- <li class="contact"><address><span class="author fn n">codeboy</span> &#45; <span class="fn email"></span></address></li> -->
+						<li class="github"><a href="http://github.com/liwenxiang/" rel="me">github.com/liwenxiang</a></li>
+						<!-- <li class="twitter"><a href="http://twitter.com//" rel="me">twitter.com/</a></li> -->
+						<!-- <li class="rss"><a href="http://feeds.feedburner.com/">Subscribe to RSS Feed</a></li> -->
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	// (function(d, s) {
+	// 	var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+	// 	if (d.getElementById(id)) {return;}
+	// 	js = d.createElement(s); js.src = url; js.id = id;
+	// 	fjs.parentNode.insertBefore(js, fjs);
+	// 	};
+	// load('//platform.twitter.com/widgets.js', 'tweetjs');
+	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/java/2012/08/03/e58f8ce9878de6a380e69fa5e99481synchronizedvolatile" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+  
+  
+</body>
+</html>
+

@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>如何设计网页登录系统</title>
+	<meta name="author" content="codeboy">
+	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
+	<!-- <link href="http://feeds.feedburner.com/" rel="alternate" title="如何设计网页登录系统" type="application/atom+xml"> -->
+	<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script> -->
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<nav class="nav-global">
+					<ul>
+						<li class="logo"><a href="/">codeboy</a></li>
+						<li class="archive"><a href="/archive.html">文章</a></li>
+						<li class="page"><a href="/pages.html">页面</a></li>
+						<li class="category"><a href="/categories.html">分类</a></li>
+						<li class="tag"><a href="/tags.html">标签</a></li>
+						<li class="about_me"><a href="/about.html">关于我</a></li>
+						<!-- <li class="forkme"><div><iframe src="http://markdotto.github.com/github&#45;buttons/github&#45;btn.html?user=plusjade&#38;repo=jekyll&#45;bootstrap&#38;type=fork&#38;count=true" -->
+						<!-- 			allowtransparency="true" frameborder="0" scrolling="0" width="95px" height="20px"></iframe></div></li> -->
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">如何设计网页登录系统</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<style>
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+    color: #737373;
+    background-color: white;
+    margin: 10px 13px 10px 13px;
+}
+table {
+	margin: 10px 0 15px 0;
+	border-collapse: collapse;
+}
+td,th {	
+	border: 1px solid #ddd;
+	padding: 3px 10px;
+}
+th {
+	padding: 5px 10px;	
+}
+
+a {
+    color: #0069d6;
+}
+a:hover {
+    color: #0050a3;
+    text-decoration: none;
+}
+a img {
+    border: none;
+}
+p {
+    margin-bottom: 9px;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #404040;
+    line-height: 36px;
+}
+h1 {
+    margin-bottom: 18px;
+    font-size: 30px;
+}
+h2 {
+    font-size: 24px;
+}
+h3 {
+    font-size: 18px;
+}
+h4 {
+    font-size: 16px;
+}
+h5 {
+    font-size: 14px;
+}
+h6 {
+    font-size: 13px;
+}
+hr {
+    margin: 0 0 19px;
+    border: 0;
+    border-bottom: 1px solid #ccc;
+}
+blockquote {
+    padding: 13px 13px 21px 15px;
+    margin-bottom: 18px;
+    font-family:georgia,serif;
+    font-style: italic;
+}
+blockquote:before {
+    content:"\201C";
+    font-size:40px;
+    margin-left:-10px;
+    font-family:georgia,serif;
+    color:#eee;
+}
+blockquote p {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 18px;
+    margin-bottom: 0;
+    font-style: italic;
+}
+code, pre {
+    font-family: Monaco, Andale Mono, Courier New, monospace;
+}
+code {
+    background-color: #fee9cc;
+    color: rgba(0, 0, 0, 0.75);
+    padding: 1px 3px;
+    font-size: 12px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+pre {
+    display: block;
+    padding: 14px;
+    margin: 0 0 18px;
+    line-height: 16px;
+    font-size: 11px;
+    border: 1px solid #d9d9d9;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+pre code {
+    background-color: #fff;
+    color:#737373;
+    font-size: 11px;
+    padding: 0;
+}
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:10px auto;
+    }
+}
+@media print {
+	body,code,pre code,h1,h2,h3,h4,h5,h6 {
+		color: black;
+	}
+	table, pre {
+		page-break-inside: avoid;
+	}
+}
+</style>
+<title>web登录设计</title>
+
+</head>
+<body>
+<h1>web登录设计</h1>
+
+<h2>登录</h2>
+
+<ol>
+<li>服务端设置，登录页面https, 接受到口令之后，服务端新生成一个随机的sessionId 放到cookies中（如果客户端之前已经有sessionId了，用新生成的替换老的－会话固定攻击），然后设置cookies http-only和secure标识。</li>
+<li>保存用户密码：使用Md5(password + salt)存储，如果需要更强的加密效果，替换Md5为bcrypt</li>
+<li>验证码：最好不用</li>
+<li>是否允许浏览器的保存密码（安全妥协过程）</li>
+</ol>
+
+
+<h2>记住我</h2>
+
+<ol>
+<li>不要让cookie有权限访问所有的操作。下面的这些功能一定要用户重新输入口令：修改口令，消费等</li>
+<li>具体实现细节
+
+<ol>
+<li>在cookie中，用户名，登录序列，登录token。</li>
+<li>用户名：明文存放。</li>
+<li>登录序列：一个被MD5散列过的随机数，仅当强制用户输入口令时更新（如：用户修改了口令）。</li>
+<li>登录token：一个被MD5散列过的随机数，仅一个登录session内有效，新的登录session会更新它。
+
+<ol>
+<li>登录token是单实例登录。意思就是一个用户只能有一个登录实例。</li>
+<li>登录序列是用来做盗用行为检测的。如果用户的cookie被盗后，盗用者使用这个cookie访问网站时，我们的系统是以为是合法用户，然后更新“登录token”，而真正的用户回来访问时，系统发现只有“用户名”和“登录序列”相同，但是“登录token” 不对，这样的话，系统就知道，这个用户可能出现了被盗用的情况，于是，系统可以清除并更改登录序列 和 登录token，这样就可以令所有的cookie失效，并要求用户输入口令。并给警告用户系统安全。</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+
+
+<h2>找回密码</h2>
+
+<ol>
+<li>不要使用安全问答：用户记不住，容易被社工</li>
+<li>保存好老的密码，发送一个唯一的url给注册邮箱，设置有效时间，用户点击之后可以设置新的密码（整个找回密码的功能必须是安全的：发送的url事https的，设置密码页面也是https的）</li>
+</ol>
+
+
+<h2>检查密码强度</h2>
+
+<ol>
+<li>简单的字符复杂度</li>
+<li>键盘复杂度(asdfghjkl这种)</li>
+</ol>
+
+
+<h2>防范暴力测试登录密码</h2>
+
+<ol>
+<li>多次失败之后验证码，</li>
+<li>锁定账户，需要邮件解锁</li>
+<li>每次失败尝试之后，延迟， 1次失败，1s之后才能重新登录，2次失败，4s之后才能重新登录，3次失败，1分钟之后才能重新登录</li>
+</ol>
+
+
+<h2>分布式的攻击方式</h2>
+
+<ol>
+<li>在多个僵尸网络发起攻击，防止IP被屏蔽</li>
+<li>使用最常用的1个密码，对所有用户进行登录尝试，而不是每一个用户进行常用的500个密码尝试</li>
+<li>登录用户1，登录用户2， 登录用户3， 再循环登录用户1， 这样就避免了对用户1的登录延迟作用。</li>
+<li>防范方式，纪录网站的登录失败次数，如果有大幅变化，报警处理（比如延缓所有用户的登录时间)</li>
+</ol>
+
+
+<h2>双重认证</h2>
+
+<ol>
+<li>比如密码加手机验证码</li>
+</ol>
+
+
+<p><a href="http://coolshell.cn/articles/5353.html">http://coolshell.cn/articles/5353.html</a>
+<a href="http://stackoverflow.com/questions/549/the-definitive-guide-to-form-based-website-authentication">http://stackoverflow.com/questions/549/the-definitive-guide-to-form-based-website-authentication</a>
+<a href="http://www.cnblogs.com/lixiong/archive/2011/12/24/2300098.html">http://www.cnblogs.com/lixiong/archive/2011/12/24/2300098.html</a></p>
+</body>
+</html>
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2013-11-16T08:07:39Z" datetime="2013-11-16T08:07:39Z" pubdate>
+							<span class="month"><abbr>November</abbr></span>
+							<span class="day">16</span>
+							<span class="year">2013</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#未分类-ref">
+    		未分类 <span>40</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<!-- <div class="social"> -->
+					<!-- 	<ul class="list&#45;linear"> -->
+					<!-- 		<li><div class="twitter&#45;tweet"><a href="https://twitter.com/share" class="twitter&#45;share&#45;button" data&#45;count="horizontal" data&#45;via="" data&#45;lang="en">Tweet</a></div></li> -->
+					<!-- 		<li><div class="twitter&#45;follow"><a href="https://twitter.com/" class="twitter&#45;follow&#45;button" data&#45;show&#45;count="false" data&#45;lang="en"></a></div></li> -->
+					<!-- 	</ul> -->
+					<!-- </div> -->
+					<div class="comment">
+					
+
+
+  <!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"codeboyname"};
+(function() {
+ var ds = document.createElement('script');
+ ds.type = 'text/javascript';ds.async = true;
+ ds.src = 'http://static.duoshuo.com/embed.js';
+ ds.charset = 'UTF-8';
+ (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+ })();
+</script>
+<!-- Duoshuo Comment END -->
+
+
+
+
+
+					</div>
+				</div><!-- misc-content -->
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/%E6%9C%AA%E5%88%86%E7%B1%BB/2013/10/24/e7bd91e9a1b5e7b1bbe59e8be6b187e680bb" title="View 网页类型汇总">&laquo; 网页类型汇总</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/web/2013/12/01/web_login_design" title="View web登录设计">web登录设计 &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<!-- <li class="contact"><address><span class="author fn n">codeboy</span> &#45; <span class="fn email"></span></address></li> -->
+						<li class="github"><a href="http://github.com/liwenxiang/" rel="me">github.com/liwenxiang</a></li>
+						<!-- <li class="twitter"><a href="http://twitter.com//" rel="me">twitter.com/</a></li> -->
+						<!-- <li class="rss"><a href="http://feeds.feedburner.com/">Subscribe to RSS Feed</a></li> -->
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	// (function(d, s) {
+	// 	var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+	// 	if (d.getElementById(id)) {return;}
+	// 	js = d.createElement(s); js.src = url; js.id = id;
+	// 	fjs.parentNode.insertBefore(js, fjs);
+	// 	};
+	// load('//platform.twitter.com/widgets.js', 'tweetjs');
+	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/%E6%9C%AA%E5%88%86%E7%B1%BB/2013/11/16/e5a682e4bd95e8aebee8aea1e7bd91e9a1b5e799bbe5bd95e7b3bbe7bb9f" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+  
+  
+</body>
+</html>
+

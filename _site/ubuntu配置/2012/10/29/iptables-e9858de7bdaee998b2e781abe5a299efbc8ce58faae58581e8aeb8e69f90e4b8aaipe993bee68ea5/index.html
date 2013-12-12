@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>iptables 配置防火墙，只允许某个IP链接</title>
+	<meta name="author" content="codeboy">
+	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
+	<!-- <link href="http://feeds.feedburner.com/" rel="alternate" title="iptables 配置防火墙，只允许某个IP链接" type="application/atom+xml"> -->
+	<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script> -->
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<nav class="nav-global">
+					<ul>
+						<li class="logo"><a href="/">codeboy</a></li>
+						<li class="archive"><a href="/archive.html">文章</a></li>
+						<li class="page"><a href="/pages.html">页面</a></li>
+						<li class="category"><a href="/categories.html">分类</a></li>
+						<li class="tag"><a href="/tags.html">标签</a></li>
+						<li class="about_me"><a href="/about.html">关于我</a></li>
+						<!-- <li class="forkme"><div><iframe src="http://markdotto.github.com/github&#45;buttons/github&#45;btn.html?user=plusjade&#38;repo=jekyll&#45;bootstrap&#38;type=fork&#38;count=true" -->
+						<!-- 			allowtransparency="true" frameborder="0" scrolling="0" width="95px" height="20px"></iframe></div></li> -->
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">iptables 配置防火墙，只允许某个IP链接</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					安装好了虚拟机，为了host机器能够访问，使用了host_only,这样等于把虚拟机暴露在外网了，
+为了安全期间，配置如下防火墙规则，这台机器只能够访问外网http服务，可以给host机器提供ssh,http等服务
+iptables配置文件如下
+<pre>local_lising_port="22 80 8080 8081"
+accept_ip="192.168.56.1"
+can_output_port="80"
+#清除之前配置的规则
+iptables -F
+#不允许主动连接本机
+iptables -I INPUT -p tcp --syn -j DROP
+for port in $local_lising_port;
+do
+#允许host机器访问本机的特定端口
+iptables -I INPUT -p tcp -s $accept_ip --dport $port -j ACCEPT
+done
+
+iptables -I OUTPUT -p tcp -j DROP
+for port in $local_lising_port;
+do
+#允许本机的特定端口向host机器提供服务
+iptables -I OUTPUT -p tcp -d $accept_ip --sport $port -j ACCEPT
+done
+for port in $can_output_port;
+do
+#允许本机访问外网http服务
+iptables -I OUTPUT -p tcp --dport $port -j ACCEPT
+done</pre>
+<!--more-->
+<pre></pre>
+最终结果如下
+<pre>Chain INPUT (policy ACCEPT)
+target     prot opt source               destination
+ACCEPT     tcp  --  coder                anywhere            tcp dpt:tproxy
+ACCEPT     tcp  --  coder                anywhere            tcp dpt:http-alt
+ACCEPT     tcp  --  coder                anywhere            tcp dpt:www
+ACCEPT     tcp  --  coder                anywhere            tcp dpt:ssh
+DROP       tcp  --  anywhere             anywhere            tcp flags:FIN,SYN,RST,ACK/SYN
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+ACCEPT     tcp  --  anywhere             anywhere            tcp dpt:www
+ACCEPT     tcp  --  anywhere             coder               tcp spt:tproxy
+ACCEPT     tcp  --  anywhere             coder               tcp spt:http-alt
+ACCEPT     tcp  --  anywhere             coder               tcp spt:www
+ACCEPT     tcp  --  anywhere             coder               tcp spt:ssh
+DROP       tcp  --  anywhere             anywhere</pre>
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2012-10-29T15:20:00Z" datetime="2012-10-29T15:20:00Z" pubdate>
+							<span class="month"><abbr>October</abbr></span>
+							<span class="day">29</span>
+							<span class="year">2012</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#ubuntu配置-ref">
+    		ubuntu配置 <span>5</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#iptables-ref">iptables <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#防火墙-ref">防火墙 <span>1</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<!-- <div class="social"> -->
+					<!-- 	<ul class="list&#45;linear"> -->
+					<!-- 		<li><div class="twitter&#45;tweet"><a href="https://twitter.com/share" class="twitter&#45;share&#45;button" data&#45;count="horizontal" data&#45;via="" data&#45;lang="en">Tweet</a></div></li> -->
+					<!-- 		<li><div class="twitter&#45;follow"><a href="https://twitter.com/" class="twitter&#45;follow&#45;button" data&#45;show&#45;count="false" data&#45;lang="en"></a></div></li> -->
+					<!-- 	</ul> -->
+					<!-- </div> -->
+					<div class="comment">
+					
+
+
+  <!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"codeboyname"};
+(function() {
+ var ds = document.createElement('script');
+ ds.type = 'text/javascript';ds.async = true;
+ ds.src = 'http://static.duoshuo.com/embed.js';
+ ds.charset = 'UTF-8';
+ (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+ })();
+</script>
+<!-- Duoshuo Comment END -->
+
+
+
+
+
+					</div>
+				</div><!-- misc-content -->
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/shell/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/2012/10/26/screen-e8aeb0e5bd95" title="View screen 记录">&laquo; screen 记录</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/vim/2012/11/11/vime68f92e4bbb6" title="View vim插件">vim插件 &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<!-- <li class="contact"><address><span class="author fn n">codeboy</span> &#45; <span class="fn email"></span></address></li> -->
+						<li class="github"><a href="http://github.com/liwenxiang/" rel="me">github.com/liwenxiang</a></li>
+						<!-- <li class="twitter"><a href="http://twitter.com//" rel="me">twitter.com/</a></li> -->
+						<!-- <li class="rss"><a href="http://feeds.feedburner.com/">Subscribe to RSS Feed</a></li> -->
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	// (function(d, s) {
+	// 	var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+	// 	if (d.getElementById(id)) {return;}
+	// 	js = d.createElement(s); js.src = url; js.id = id;
+	// 	fjs.parentNode.insertBefore(js, fjs);
+	// 	};
+	// load('//platform.twitter.com/widgets.js', 'tweetjs');
+	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/ubuntu%E9%85%8D%E7%BD%AE/2012/10/29/iptables-e9858de7bdaee998b2e781abe5a299efbc8ce58faae58581e8aeb8e69f90e4b8aaipe993bee68ea5" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+  
+  
+</body>
+</html>
+

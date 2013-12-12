@@ -1,0 +1,71 @@
+---
+author: liwenxiang
+comments: true
+date: 2012-06-04 14:09:27+00:00
+layout: post
+slug: sed-%e8%ae%b0%e5%bd%95
+title: sed 记录
+wordpress_id: 113
+categories:
+- shell
+tags:
+- shell
+---
+
+以前看的sed的东西，记录下，防止忘掉，
+<!--more-->
+<pre>
+sed基本模式
+[address]s/pattern/replacement/flags
+
+sed可用参数
+sed -n   默认sed输出所有的行，此参数表示不输出，常和flag的p配合使用，如   sed -n s/a//p x.txt 表示将x.txt中的所有出现a的行换成b并输出
+sed -i sed默认不修改文件而是输出到stdout,此参数表示修改回源文件
+
+
+1, 其中的地址可以用正则表达式来表示
+    一个完整的例子如
+    a.txt 内容
+    11ce
+    121c
+    21c
+    执行sed -n '/^1/s/e$/x/p' a.txt将打印出来  
+    11cx
+    其中地址是/^1/   pattern是e$   替换为x 最后打印出结果
+
+2在replacement中的特殊字符
+    1,  &表示pattern匹配的内容
+    如a.txt内容
+    2nc
+    3abcpwd
+    执行 sed -n 's/^3/as 3 begin line content is  &/p' a 将打印出
+    as 3 begin line content is  3abcpwd
+    2,  \n表示在pattern中指定的第几个东西，由\(pattern\)指定  \n这个n数字以1开头，
+    如下例a.txt内容
+    2nc
+    abcpwd
+    执行 sed -n 's/\(abc\)\(pwd\)/first is \1, and second is \2/p' a  将打印出
+    first is abc, and second is pwd
+    3,  \用来转义，及添加回车等
+
+3, 其中flags有
+    n 表示对第几次匹配的情况进行替换,sed 默认只匹配第一次
+    g 对所有匹配进行替换
+    p 对匹配的进行打印出来
+    W file 保存到文件 file
+
+目录下有如下文件
+0_unread
+1_unread
+2_unread
+3_unread
+4_unread
+5_unread
+6_unread
+7_unread
+8_unread
+9_unread
+10_unread
+将其全部转换成_readed后缀
+ls --color=none| grep ".*_unread" | sed -n "s/\(.*\)_unread$/mv \0 \1_readed/p" | /bin/bash
+</pre>

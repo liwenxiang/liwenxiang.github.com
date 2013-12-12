@@ -1,0 +1,382 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>海量用户积分排名算法探讨</title>
+	<meta name="author" content="codeboy">
+	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
+	<!-- <link href="http://feeds.feedburner.com/" rel="alternate" title="海量用户积分排名算法探讨" type="application/atom+xml"> -->
+	<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script> -->
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<nav class="nav-global">
+					<ul>
+						<li class="logo"><a href="/">codeboy</a></li>
+						<li class="archive"><a href="/archive.html">文章</a></li>
+						<li class="page"><a href="/pages.html">页面</a></li>
+						<li class="category"><a href="/categories.html">分类</a></li>
+						<li class="tag"><a href="/tags.html">标签</a></li>
+						<li class="about_me"><a href="/about.html">关于我</a></li>
+						<!-- <li class="forkme"><div><iframe src="http://markdotto.github.com/github&#45;buttons/github&#45;btn.html?user=plusjade&#38;repo=jekyll&#45;bootstrap&#38;type=fork&#38;count=true" -->
+						<!-- 			allowtransparency="true" frameborder="0" scrolling="0" width="95px" height="20px"></iframe></div></li> -->
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">海量用户积分排名算法探讨</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					看到一篇文章介绍用户排名算法，自己对其中的一个实现了下，
+
+背景介绍：
+
+某海量用户网站，用户拥有积分，积分可能会在使用过程中随时更新。现在要为该网站设计一种算法，在每次用户登录时显示其当前积分排名。用户最大规模为2亿；积分为非负整数，且小于100万
+
+算法：
+
+仔细观察一下积分变化对排名的具体影响，可以发现某用户的积分从s变为s+n，积分小于s或者大于等于s+n的其他用户排名实际上并不会受到影响，只有积分在[s,s+n)区间内的用户排名会下降1位。我们可以用于一个大小为100,000,000的数组表示积分和排名的对应关系，其中rank[s]表示积分s所对应的排名。初始化时，rank数组可以由user_score表在O(n)的复杂度内计算而来。用户排名的查询和更新基于这个数组来进行。查询积分s所对应的排名直接返回rank[s]即可，复杂度为O(1)；当用户积分从s变为s+n，只需要把rank[s+1]到rank[s+n]这n个元素的值减少1即可，复杂度为O(n)。
+
+算法特点
+
+优点：积分排名数组比区间树更简单，易于实现；排名查询复杂度为O(1)；排名更新复杂度O(n)，在积分变化不大的情况下非常高效。
+
+缺点：当n比较大时，需要更新大量元素，
+
+其中发现隐含的问题是，一个积分可能是没有人使用的，因此需要存储一个积分的使用人数，实现如下：
+
+<!--more-->
+<pre>
+package name.codeboy.rank;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+public class RankCheck {
+	private int maxScore;
+	private int[] rankes;
+	private int[] scoreCount;
+	
+	public RankCheck(int maxScore) {
+		super();
+		this.maxScore = maxScore;
+		this.rankes = new int[this.maxScore];
+		scoreCount = new int[this.maxScore];
+		Arrays.fill(this.rankes, 0, this.rankes.length-1, -1);
+	}
+	
+	public void initData() {
+		for (int i=0; i<maxScore; i++) {
+			rankes[i] = i;
+			scoreCount[i]++;
+		}
+	}
+	
+	public void changeScore(int src, int dest) {
+		if (src<0 || src>=maxScore || dest<0 || dest>=maxScore) {
+			throw new IllegalArgumentException("change from " + src + "to dest " + dest + " not ellegal");
+		}
+		if (scoreCount[src] == 0) {
+			throw new IllegalArgumentException("score " + src + " is not in db");
+		}
+		for (int i=src+1; i<=dest; i++) {
+			if (rankes[i] > 0) {
+				rankes[i]--;
+			}
+		}
+		scoreCount[src]--;
+		scoreCount[dest]++;
+	}
+	
+	public void addScore(int score) {
+		if ( score >= maxScore || score < 0) {
+			throw new IllegalArgumentException("score " + score + "not illegal");
+		}
+		scoreCount[score]++;
+		for (int i=score+1; i<rankes.length; i++) {
+			if (scoreCount[i] != 0) {
+				rankes[i]++;
+			}
+		}
+	}
+	
+	public void removeScore(int score) {
+		if ( score >= maxScore || score < 0) {
+			throw new IllegalArgumentException("score " + score + "not illegal");
+		}
+		if (scoreCount[score] == 0) {
+			throw new IllegalArgumentException("score " + score + " not in db");
+		}
+		scoreCount[score]--;
+		for (int i=score+1; i<rankes.length; i++) {
+			if (scoreCount[i] != 0) {
+				rankes[i]--;
+			}
+		}
+	}
+	
+	public int getRank(int score) {
+		if ( score >= maxScore || score < 0) {
+			throw new IllegalArgumentException("score " + score + "not illegal");
+		}
+		if (scoreCount[score] == 0) {
+			throw new IllegalArgumentException("score " + score + "is not in db");
+		}
+		return rankes[score];
+	}
+	public int getScoreCount(int score) {
+		if ( score >= maxScore || score < 0) {
+			throw new IllegalArgumentException("score " + score + "not illegal");
+		}
+		return scoreCount[score];
+	}
+	
+	public List<Integer> getAllScore() {
+		List<Integer> result = new LinkedList<Integer>();
+		for (int i=0; i<rankes.length; i++) {
+			for (int j=0, size=scoreCount[i]; j<size; j++) {
+				result.add(i);
+			}
+		}
+		return result;
+	}
+	
+	
+
+}
+测试代码
+package name.codeboy.rank;
+
+import java.util.List;
+
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
+public class RankCheckTest extends TestCase {
+
+	public void testInitData() {
+		RankCheck checker = new RankCheck(10);
+		checker.initData();
+		Assert.assertEquals(9, checker.getRank(9));
+		Assert.assertEquals(0, checker.getRank(0));
+		
+		checker.changeScore(1, 3);
+		log(checker.getAllScore());
+		Assert.assertEquals(0, checker.getScoreCount(1));
+		Assert.assertEquals(2, checker.getScoreCount(3));
+		Assert.assertEquals(0, checker.getRank(0));
+		Assert.assertEquals(1, checker.getRank(2));
+		Assert.assertEquals(2, checker.getRank(3));
+		Assert.assertEquals(6, checker.getRank(6));
+		try{
+			Assert.assertEquals(1, checker.getRank(1));
+			fail();
+		}catch (Exception e) {
+			
+		}
+		
+		checker.addScore(5);
+		log(checker.getAllScore());
+		Assert.assertEquals(2, checker.getScoreCount(5));
+		Assert.assertEquals(7, checker.getRank(6));
+		checker.addScore(1);
+		Assert.assertEquals(1, checker.getScoreCount(1));
+		Assert.assertEquals(8, checker.getRank(6));
+		Assert.assertEquals(1, checker.getRank(1));
+		
+		checker.removeScore(1);
+		log(checker.getAllScore());
+		Assert.assertEquals(0, checker.getScoreCount(1));
+		Assert.assertEquals(7, checker.getRank(6));
+	}
+
+	private void log(List<Integer> allScore) {
+		for (Integer t : allScore) {
+			System.out.print(t);
+			System.out.print("\t");
+		}
+		System.out.print("\n");
+		
+		
+	}
+
+}
+
+</pre>
+<a href="http://www.cnblogs.com/weidagang2046/archive/2012/03/01/massive-user-ranking.html">原文算法链接</a>
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2012-06-04T13:58:36Z" datetime="2012-06-04T13:58:36Z" pubdate>
+							<span class="month"><abbr>June</abbr></span>
+							<span class="day">04</span>
+							<span class="year">2012</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#程序语言小记录-ref">
+    		程序语言小记录 <span>4</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#java-ref">java <span>4</span></a></li>
+     
+    	<li><a href="/tags.html#大数据处理-ref">大数据处理 <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#算法-ref">算法 <span>2</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<!-- <div class="social"> -->
+					<!-- 	<ul class="list&#45;linear"> -->
+					<!-- 		<li><div class="twitter&#45;tweet"><a href="https://twitter.com/share" class="twitter&#45;share&#45;button" data&#45;count="horizontal" data&#45;via="" data&#45;lang="en">Tweet</a></div></li> -->
+					<!-- 		<li><div class="twitter&#45;follow"><a href="https://twitter.com/" class="twitter&#45;follow&#45;button" data&#45;show&#45;count="false" data&#45;lang="en"></a></div></li> -->
+					<!-- 	</ul> -->
+					<!-- </div> -->
+					<div class="comment">
+					
+
+
+  <!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"codeboyname"};
+(function() {
+ var ds = document.createElement('script');
+ ds.type = 'text/javascript';ds.async = true;
+ ds.src = 'http://static.duoshuo.com/embed.js';
+ ds.charset = 'UTF-8';
+ (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+ })();
+</script>
+<!-- Duoshuo Comment END -->
+
+
+
+
+
+					</div>
+				</div><!-- misc-content -->
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/%E8%BD%AC%E8%BD%BD/2012/06/03/e4bda0e4b88de883bde8a7a3e9878ae79a8410e5a4a7e5b8b8e8a781e78eb0e8b1a1efbc88zzefbc89" title="View 你不能解释的10大常见现象（zz）">&laquo; 你不能解释的10大常见现象（zz）</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/shell/2012/06/04/sed-e8aeb0e5bd95" title="View sed 记录">sed 记录 &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<!-- <li class="contact"><address><span class="author fn n">codeboy</span> &#45; <span class="fn email"></span></address></li> -->
+						<li class="github"><a href="http://github.com/liwenxiang/" rel="me">github.com/liwenxiang</a></li>
+						<!-- <li class="twitter"><a href="http://twitter.com//" rel="me">twitter.com/</a></li> -->
+						<!-- <li class="rss"><a href="http://feeds.feedburner.com/">Subscribe to RSS Feed</a></li> -->
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	// (function(d, s) {
+	// 	var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+	// 	if (d.getElementById(id)) {return;}
+	// 	js = d.createElement(s); js.src = url; js.id = id;
+	// 	fjs.parentNode.insertBefore(js, fjs);
+	// 	};
+	// load('//platform.twitter.com/widgets.js', 'tweetjs');
+	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/%E7%A8%8B%E5%BA%8F%E8%AF%AD%E8%A8%80%E5%B0%8F%E8%AE%B0%E5%BD%95/2012/06/04/e6b5b7e9878fe794a8e688b7e7a7afe58886e68e92e5908de7ae97e6b395e68ea2e8aea8" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+  
+  
+</body>
+</html>
+

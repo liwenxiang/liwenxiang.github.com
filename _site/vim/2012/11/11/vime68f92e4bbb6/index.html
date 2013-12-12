@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>vim插件</title>
+	<meta name="author" content="codeboy">
+	<link href='/assets/themes/the-program/css/style.css' rel="stylesheet" media="all">
+	<!-- <link href="http://feeds.feedburner.com/" rel="alternate" title="vim插件" type="application/atom+xml"> -->
+	<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script> -->
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<nav class="nav-global">
+					<ul>
+						<li class="logo"><a href="/">codeboy</a></li>
+						<li class="archive"><a href="/archive.html">文章</a></li>
+						<li class="page"><a href="/pages.html">页面</a></li>
+						<li class="category"><a href="/categories.html">分类</a></li>
+						<li class="tag"><a href="/tags.html">标签</a></li>
+						<li class="about_me"><a href="/about.html">关于我</a></li>
+						<!-- <li class="forkme"><div><iframe src="http://markdotto.github.com/github&#45;buttons/github&#45;btn.html?user=plusjade&#38;repo=jekyll&#45;bootstrap&#38;type=fork&#38;count=true" -->
+						<!-- 			allowtransparency="true" frameborder="0" scrolling="0" width="95px" height="20px"></iframe></div></li> -->
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">vim插件</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					放假两天一直都在整vim插件的事情，把所有的东西整下
+
+<!--more-->
+
+Conque Shell
+<a href="http://www.vim.org/scripts/script.php?script_id=2771">http://www.vim.org/scripts/script.php?script_id=2771</a>
+vim中分开一个窗口开shell,默认的是 insert模式，可以输入命令，esc到命令模式之后可以复制输出，
+:ConqueTerm &lt;command&gt;
+:ConqueTermSplit bash
+:ConqueTermVSplit bash
+:ConqueTermTab bash
+
+taglist
+<a href="http://www.vim.org/scripts/script.php?script_id=273">http://www.vim.org/scripts/script.php?script_id=273</a>
+依赖系统软件ctags
+在目录下执行ctags -R生成tags文件，
+WinManager
+<a href="http://www.vim.org/scripts/script.php?script_id=95">http://www.vim.org/scripts/script.php?script_id=95</a>
+窗口管理器
+在vimrc文件中配置
+let g:winManagerWindowLayout='FileExplorer|TagList'
+nmap wm :WMToggle&lt;cr&gt;
+在taglist中，
+到左下边taglist显示的窗口中，移动到标签，回车可在右侧直接显示标签所在文件和行，空格只在下面显示，右侧不更新
+在右边代码中&lt;C-]&gt;进入和&lt;C-T&gt;&lt;C-O&gt;退出
+
+MiniBufExplorer显示所有的buffer文件
+<a href="http://www.vim.org/scripts/script.php?script_id=159">http://www.vim.org/scripts/script.php?script_id=159</a>
+当打开多个buffer文件的时候，上面会显示各个文件名，C+W跳到这个窗口中去，tab可选择buffer,回车显示文件，d删除光标所在的buffer
+
+自动补全
+OmniCppComplete插件，应该是默认安装好的了
+命令模式下输入
+:set omnifunc?
+如果得到的结果为：omnifunc=ccomplete#Complete，说明有必要进行以下的操作以实现针对c++的自动补全
+创建stdc++ 对应的tags：
+A）首先下载经高手修改定制的libstdc++头文件，可以到这里下载：
+<a href="http://www.vim.org/scripts/script.php?script_id=2358">http://www.vim.org/scripts/script.php?script_id=2358</a>
+并将其解压
+B) 运行以下命令
+$ cd ~/tags
+$ ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -f tags cpp_src
+
+然后把整个文件夹（包含下载的cpp_src和生成的tags文件）放到一个可以访问的地方，比如
+/home/yourname/.vim/self_add_tags_store/tags
+然后在vimrc文件中把上面生成的tags文件添加进去
+（另外把/usr/include/c++/4.6下面的我也生成了一个tags文件，都加入进去了）
+filetype plugin indent on  “打开文件检测
+syntax enable
+syntax on
+set background=dark 默认选择之后看不清楚，用这个可以看清楚。
+set tags=tags
+set tags+=/usr/include/c++/tags
+set tags+=/home/yourname/.vim/self_add_tags_store/tags
+set completeopt=longest,menu
+默认的当有abc.   或者abc:: 就会去自动补全
+如果不是上面的两种，可以写一部分然后C-X 加C-O就可以调出函数了，
+C-X C-P是补全文本。
+参考 <a href="http://vim.wikia.com/wiki/C%2B%2B_code_completion">http://vim.wikia.com/wiki/C%2B%2B_code_completion</a>
+
+C.Vim,可以添加很多默认的模版，
+对其中的模版可以修改下，/home/yourname/.vim/c-support/templates/Templates/
+SetMacro( 'AUTHOR',      'self_name' )这些玩意
+每次新生成的文件和插入的函数，之类的模版可以在cpp.statements.template和c.statements.template这些文件中去改
+具体的comments.template是注释模版
+preprocessor.template是头文件include 那些东西
+statements.template是if, for ,which这些
+c.idioms.template是插入的main函数，emun，插入函数,for( x=0; x&lt;n; x+=1 )这些东西
+help csupport
+
+\if等命令插入的 &lt;+argument_list+&gt;这种东西，C+j可以删掉，而且是删掉一个自动跳到下一个
+
+\rc一键编译，如果编译失败，自动跳出quickfix窗口，
+
+\rr一键编译运行
+
+查找文件FuzzyFinder
+<a href="http://www.vim.org/scripts/script.php?script_id=1984">http://www.vim.org/scripts/script.php?script_id=1984</a>
+依赖vim插件L9 library
+map ,, :FufCoverageFile &lt;cr&gt;
+按,,打开匹配文件窗口
+
+Visual Mark
+需要修改
+安装 visualmark.vim 后，如果是在 Ubuntu 下做标记，会报一个“E197 不能设定语言为'en_US'"的错误
+将visualmark.vim中的
+exec ":lan mes en_US"更改为exec ":lan POSIX"
+mm标记，F2，跳到下一个标记，关闭vi之后标记失效
+
+Grep
+在当前目录下的文件中查找
+:Grep
+
+quickfix
+
+默认已经安装好了，在文件搞好之后，输入 :make之后，会编译文件，等待编译结束之后，按:cw就可以出来quickfix窗口，点击对应的错误信息，就可以自动跳到错误的地方了
+
+:cn        // 切换到下一个结果
+:cp        // 切换到上一个结果 如果你经常使用这两个命令, 你还可以给他们设定快捷键, 比如在~/.vimrc中增加:
+nmap &lt;F6&gt; :cn&lt;cr&gt;
+nmap &lt;F7&gt; :cp&lt;cr&gt;
+
+nmap &lt;F5&gt; :make&lt;cr&gt;
+
+可以使用cvim插件生成makefile文件，vim tmp.c，\nr就可以导入模版，其中有 makefile模版，把其中的EXECUTABLE和SOURCES改掉就好，然后把文件重命名为Makefile
+
+具体使用截图
+
+&nbsp;
+
+<a href="http://www.codeboy.name/wp-content/uploads/2012/11/2012-11-11-15-59-351.png"><img class="alignnone size-full wp-image-285" title="2012-11-11 15 59 35" src="http://www.codeboy.name/wp-content/uploads/2012/11/2012-11-11-15-59-351.png" alt="" width="1920" height="1041" /></a>
+
+自己的vimrc文件内容
+
+set ts=4
+set autoindent
+set expandtab
+set shiftwidth=4
+set hlsearch
+syntax enable
+set cindent
+set nocompatible
+syntax on
+set background=dark
+
+"make so to insert new line and still in this line
+nmap so o&lt;ESC&gt;k
+nmap sO O&lt;ESC&gt;j
+
+" Smart way to move between windows
+nmap &lt;C-j&gt; &lt;C-W&gt;j
+nmap &lt;C-k&gt; &lt;C-W&gt;k
+nmap &lt;C-h&gt; &lt;C-W&gt;h
+nmap &lt;C-l&gt; &lt;C-W&gt;l
+
+nmap &lt;F6&gt; :cn&lt;cr&gt;
+nmap &lt;F7&gt; :cp&lt;cr&gt;
+
+nmap &lt;F5&gt; :make&lt;cr&gt;
+
+" when use sh , create new vsp  to do shell
+nmap sh :ConqueTermVSplit bash&lt;cr&gt;
+
+"set auto complete
+filetype plugin indent on
+set tags=tags
+set tags+=/usr/include/c++/tags
+set tags+=/home/youname/.vim/self_add_tags_store/tags
+set completeopt=longest,menu
+let OmniCpp_MayCompleteDot = 1 " autocomplete with .
+let OmniCpp_MayCompleteArrow = 1 " autocomplete with -&gt;
+let OmniCpp_MayCompleteScope = 1 " autocomplete with ::
+let OmniCpp_SelectFirstItem = 2 " select first item (but don't insert)
+let OmniCpp_NamespaceSearch = 2 " search namespaces in this and included files
+let OmniCpp_ShowPrototypeInAbbr = 1 " show function prototype in popup window
+let OmniCpp_GlobalScopeSearch=1 " enable the global scope search
+let OmniCpp_DisplayMode=1 " Class scope completion mode: always show all members
+
+let OmniCpp_DefaultNamespaces=["std"]
+let OmniCpp_ShowScopeInAbbr=1 " show scope in abbreviation and remove the last column
+let OmniCpp_ShowAccess=1
+
+"set for cscope
+:set cscopequickfix=s-,c-,d-,i-,t-,e-
+
+let g:winManagerWindowLayout='FileExplorer|TagList'
+nmap wm :WMToggle&lt;cr&gt;
+
+"set for FuzzFinder
+"can only match pattern file , but not use it
+":let g:fuf_coveragefile_globPatterns=['*.java','*.cc','*.c','*.cpp','*.h','*.json','*.txt','*.xml','*.py']
+nmap ,, :FufCoverageFile &lt;cr&gt;
+
+有一个比较纠结的选项，set mouse=a  设置之后用鼠标会很方便，但是putty的鼠标选择复制没办法用了，两难啊
+
+（解决  set mouse=nv
+想要复制的时候就按个冒号，进入 command 模式，
+然后就可以释放鼠标了。）
+
+参考<a title="http://blog.csdn.net/namecyf/article/details/7787523" href="http://blog.csdn.net/namecyf/article/details/7787523">http://blog.csdn.net/namecyf/article/details/7787523</a>
+
+<a title="http://blog.csdn.net/liumengxinfly/article/details/6967687" href="http://blog.csdn.net/liumengxinfly/article/details/6967687">http://blog.csdn.net/liumengxinfly/article/details/6967687</a>
+
+<a title="http://my.oschina.net/alphajay/blog/51316" href="http://my.oschina.net/alphajay/blog/51316">http://my.oschina.net/alphajay/blog/51316</a>
+
+<a title="http://vim.wikia.com/wiki/C%2B%2B_code_completion" href="http://vim.wikia.com/wiki/C%2B%2B_code_completion">http://vim.wikia.com/wiki/C%2B%2B_code_completion</a>
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2012-11-11T09:10:41Z" datetime="2012-11-11T09:10:41Z" pubdate>
+							<span class="month"><abbr>November</abbr></span>
+							<span class="day">11</span>
+							<span class="year">2012</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#vim-ref">
+    		vim <span>2</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#vim-ref">vim <span>2</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<!-- <div class="social"> -->
+					<!-- 	<ul class="list&#45;linear"> -->
+					<!-- 		<li><div class="twitter&#45;tweet"><a href="https://twitter.com/share" class="twitter&#45;share&#45;button" data&#45;count="horizontal" data&#45;via="" data&#45;lang="en">Tweet</a></div></li> -->
+					<!-- 		<li><div class="twitter&#45;follow"><a href="https://twitter.com/" class="twitter&#45;follow&#45;button" data&#45;show&#45;count="false" data&#45;lang="en"></a></div></li> -->
+					<!-- 	</ul> -->
+					<!-- </div> -->
+					<div class="comment">
+					
+
+
+  <!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"codeboyname"};
+(function() {
+ var ds = document.createElement('script');
+ ds.type = 'text/javascript';ds.async = true;
+ ds.src = 'http://static.duoshuo.com/embed.js';
+ ds.charset = 'UTF-8';
+ (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+ })();
+</script>
+<!-- Duoshuo Comment END -->
+
+
+
+
+
+					</div>
+				</div><!-- misc-content -->
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/ubuntu%E9%85%8D%E7%BD%AE/2012/10/29/iptables-e9858de7bdaee998b2e781abe5a299efbc8ce58faae58581e8aeb8e69f90e4b8aaipe993bee68ea5" title="View iptables 配置防火墙，只允许某个IP链接">&laquo; iptables 配置防火墙，只允许某个IP链接</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/%E5%BF%83%E6%83%85/2012/11/25/e8bdafe4bbb6e8aebee8aea1e88ab1e8b4b9e697b6e997b4" title="View 软件设计花费时间">软件设计花费时间 &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<!-- <li class="contact"><address><span class="author fn n">codeboy</span> &#45; <span class="fn email"></span></address></li> -->
+						<li class="github"><a href="http://github.com/liwenxiang/" rel="me">github.com/liwenxiang</a></li>
+						<!-- <li class="twitter"><a href="http://twitter.com//" rel="me">twitter.com/</a></li> -->
+						<!-- <li class="rss"><a href="http://feeds.feedburner.com/">Subscribe to RSS Feed</a></li> -->
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	// (function(d, s) {
+	// 	var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+	// 	if (d.getElementById(id)) {return;}
+	// 	js = d.createElement(s); js.src = url; js.id = id;
+	// 	fjs.parentNode.insertBefore(js, fjs);
+	// 	};
+	// load('//platform.twitter.com/widgets.js', 'tweetjs');
+	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/vim/2012/11/11/vime68f92e4bbb6" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+  
+  
+</body>
+</html>
+

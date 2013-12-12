@@ -1,0 +1,70 @@
+---
+author: liwenxiang
+comments: true
+date: 2012-06-20 06:44:29+00:00
+layout: post
+slug: linux-%e4%b8%8a%e5%8f%af%e4%bb%a5%e4%bd%bf%e7%94%a8%e7%9a%84%e4%b8%8d%e5%90%8c-io-%e6%a8%a1%e5%9e%8b%ef%bc%88zz%ef%bc%89
+title: Linux 上可以使用的不同 I/O 模型（zz）
+wordpress_id: 217
+categories:
+- 操作系统
+- 转载
+tags:
+- IO
+---
+
+<a name="fig1"></a><strong></strong>
+
+Linux 上可以使用的不同 I/O 模型。这并不是一个详尽的介绍，但是我们将试图介绍最常用的一些模型来解释它们与异步 I/O 之间的区别。下图给出了同步和异步模型，以及阻塞和非阻塞的模型。
+
+<strong> <img src="http://www.ibm.com/developerworks/cn/linux/l-async/figure1.gif" alt="基本 Linux I/O 模型的简单矩阵" width="386" height="225" />
+</strong>
+
+每个 I/O 模型都有自己的使用模式，它们对于特定的应用程序都有自己的优点。本节将简要对其一一进行介绍。
+
+<!--more-->
+<h2>1. 同步阻塞 I/O</h2>
+最常用的一个模型是同步阻塞 I/O 模型。在这个模型中，用户空间的应用程序执行一个系统调用，这会导致应用程序阻塞。这意味着应用程序会一直阻塞，直到系统调用完成为止（数据传输完成或发生错误）。调用应用程序处于一种不再消费 CPU 而只是简单等待响应的状态，因此从处理的角度来看，这是非常有效的。
+
+图 2 给出了传统的阻塞 I/O 模型，这也是目前应用程序中最为常用的一种模型。其行为非常容易理解，其用法对于典型的应用程序来说都非常有效。在调用 <code>read</code> 系统调用时，应用程序会阻塞并对内核进行上下文切换。然后会触发读操作，当响应返回时（从我们正在从中读取的设备中返回），数据就被移动到用户空间的缓冲区中。然后应用程序就会解除阻塞（<code>read</code> 调用返回）。
+
+<strong>
+<img src="http://www.ibm.com/developerworks/cn/linux/l-async/figure2.gif" alt="同步阻塞 I/O 模型的典型流程" width="538" height="340" /></strong>
+
+图 2. 同步阻塞 I/O 模型的典型流程<strong>
+</strong>
+
+从应用程序的角度来说，<code>read</code> 调用会延续很长时间。实际上，在内核执行读操作和其他工作时，应用程序的确会被阻塞。
+<h2><a name="N100B4"></a>2. 同步非阻塞 I/O</h2>
+同步阻塞 I/O 的一种效率稍低的变种是同步非阻塞 I/O。在这种模型中，设备是以非阻塞的形式打开的。这意味着 I/O 操作不会立即完成，<code>read</code> 操作可能会返回一个错误代码，说明这个命令不能立即满足（<code>EAGAIN</code> 或 <code>EWOULDBLOCK</code>），如图 3 所示。
+
+<strong>
+</strong>图 3. 同步非阻塞 I/O 模型的典型流程<strong>
+<img src="http://www.ibm.com/developerworks/cn/linux/l-async/figure3.gif" alt="同步非阻塞 I/O 模型的典型流程" width="474" height="340" />
+</strong>
+
+非阻塞的实现是 I/O 命令可能并不会立即满足，需要应用程序调用许多次来等待操作完成。这可能效率不高，因为在很多情况下，当内核执行这个命令时，应用程序必须要进行忙碌等待，直到数据可用为止，或者试图执行其他工作。正如图 3 所示的一样，这个方法可以引入 I/O 操作的延时，因为数据在内核中变为可用到用户调用 <code>read</code> 返回数据之间存在一定的间隔，这会导致整体数据吞吐量的降低。
+<h2><a name="N100E0"></a>3. 异步阻塞 I/O</h2>
+另外一个阻塞解决方案是带有阻塞通知的非阻塞 I/O。在这种模型中，配置的是非阻塞 I/O，然后使用阻塞 <code>select</code> 系统调用来确定一个 I/O 描述符何时有操作。使 <code>select</code> 调用非常有趣的是它可以用来为多个描述符提供通知，而不仅仅为一个描述符提供通知。对于每个提示符来说，我们可以请求这个描述符可以写数据、有读数据可用以及是否发生错误的通知。
+
+<strong>
+</strong>图 4. 异步阻塞 I/O 模型的典型流程 (select)<strong>
+<img src="http://www.ibm.com/developerworks/cn/linux/l-async/figure4.gif" alt="异步阻塞 I/O 模型的典型流程" width="541" height="340" />
+</strong>
+
+<code>select</code> 调用的主要问题是它的效率不是非常高。尽管这是异步通知使用的一种方便模型，但是对于高性能的 I/O 操作来说不建议使用。
+<h2><a name="N10107"></a>4. 异步非阻塞 I/O（AIO）</h2>
+最后，异步非阻塞 I/O 模型是一种处理与 I/O 重叠进行的模型。读请求会立即返回，说明 <code>read</code> 请求已经成功发起了。在后台完成读操作时，应用程序然后会执行其他处理操作。当 <code>read</code> 的响应到达时，就会产生一个信号或执行一个基于线程的回调函数来完成这次 I/O 处理过程。
+
+<strong>
+<a name="fig5"></a><strong>图 5. 异步非阻塞 I/O 模型的典型流程</strong>
+<img src="http://www.ibm.com/developerworks/cn/linux/l-async/figure5.gif" alt="异步非阻塞 I/O 模型的典型流程" width="481" height="340" />
+</strong>
+
+在一个进程中为了执行多个 I/O 请求而对计算操作和 I/O 处理进行重叠处理的能力利用了处理速度与 I/O 速度之间的差异。当一个或多个 I/O 请求挂起时，CPU 可以执行其他任务；或者更为常见的是，在发起其他 I/O 的同时对已经完成的 I/O 进行操作。
+
+&nbsp;
+
+<strong>有缩减，原文链接</strong>
+
+<a href="http://www.ibm.com/developerworks/cn/linux/l-async/">http://www.ibm.com/developerworks/cn/linux/l-async/</a>
