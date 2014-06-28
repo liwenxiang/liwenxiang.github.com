@@ -2,7 +2,7 @@
 layout: post
 title: "c,c++编译过程"
 description: ""
-category: "c++"
+category: "cplusplus"
 tags: []
 ---
 #预处理，编译，汇编，链接
