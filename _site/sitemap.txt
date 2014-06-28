@@ -1,11 +1,9 @@
 
 http://liwenxiang.github.io/about.html
 http://liwenxiang.github.io/archive.html
-http://liwenxiang.github.io/atom.xml
 http://liwenxiang.github.io/categories.html
 http://liwenxiang.github.io/index.html
 http://liwenxiang.github.io/pages.html
-http://liwenxiang.github.io/rss.xml
 http://liwenxiang.github.io/sitemap.txt
 http://liwenxiang.github.io/tags.html
 
